@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.evynkchargingmobileapp.R;
 import com.example.evynkchargingmobileapp.data.model.User;
 import com.example.evynkchargingmobileapp.repo.AuthRepository;
+import com.example.evynkchargingmobileapp.ui.dashboard.DashboardActivity;
 import com.example.evynkchargingmobileapp.util.Prefs;
 
 public class LoginActivity extends AppCompatActivity {
@@ -28,7 +32,8 @@ public class LoginActivity extends AppCompatActivity {
         // auto-skip if already logged in
         String nic = Prefs.getCurrentNic(this);
         if (nic != null) {
-            finish(); // already logged; replace with startActivity(new Intent(this, DashboardActivity.class));
+            startActivity(new Intent(this, DashboardActivity.class));
+            finish();
             return;
         }
 
@@ -59,15 +64,19 @@ public class LoginActivity extends AppCompatActivity {
             @Override public void onSuccess(User data) {
                 main.post(() -> {
                     Prefs.setCurrentNic(LoginActivity.this, data.nic);
-                    Toast.makeText(LoginActivity.this, "Welcome " + (data.name == null ? "" : data.name), Toast.LENGTH_SHORT).show();
-                    finish(); // or startActivity(new Intent(this, DashboardActivity.class));
+                    Toast.makeText(LoginActivity.this,
+                            "Welcome " + (data.name == null ? "" : data.name),
+                            Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+                    finish();
                 });
             }
 
             @Override public void onError(String msg) {
                 main.post(() -> {
                     btnLogin.setEnabled(true);
-                    Toast.makeText(LoginActivity.this, "Login failed: " + msg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this,
+                            "Login failed: " + msg, Toast.LENGTH_LONG).show();
                 });
             }
         });

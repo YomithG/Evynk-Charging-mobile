@@ -3,10 +3,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:networkSecurityConfig="@xml/network_security_config"
         android:allowBackup="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config">
 
         <!-- Launcher -->
         <activity
@@ -20,5 +21,6 @@
 
         <activity android:name=".ui.auth.RegisterActivity" />
         <activity android:name=".ui.dashboard.DashboardActivity" />
+        <activity android:name=".ui.dashboard.EditProfileActivity" />
     </application>
 </manifest>
