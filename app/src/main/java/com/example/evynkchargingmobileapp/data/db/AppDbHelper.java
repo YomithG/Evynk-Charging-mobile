@@ -11,17 +11,17 @@ public class AppDbHelper extends SQLiteOpenHelper {
     public AppDbHelper(Context ctx) { super(ctx, DB_NAME, null, DB_VERSION); }
 
     @Override public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE users(" +
+        db.execSQL("CREATE TABLE IF NOT EXISTS users(" +
                 "nic TEXT PRIMARY KEY," +
-                "name TEXT NOT NULL," +
+                "name TEXT," +
                 "email TEXT," +
                 "phone TEXT," +
                 "status INTEGER NOT NULL DEFAULT 1)");
-        db.execSQL("CREATE TABLE tokens(" +
+        db.execSQL("CREATE TABLE IF NOT EXISTS tokens(" +
                 "nic TEXT PRIMARY KEY," +
                 "accessToken TEXT," +
                 "refreshToken TEXT)");
     }
 
-    @Override public void onUpgrade(SQLiteDatabase db, int oldV, int newV) { /* migrations */ }
+    @Override public void onUpgrade(SQLiteDatabase db, int oldV, int newV) { }
 }

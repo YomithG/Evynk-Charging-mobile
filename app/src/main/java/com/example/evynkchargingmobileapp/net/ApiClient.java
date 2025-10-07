@@ -17,16 +17,27 @@ public class ApiClient {
         c.setRequestProperty("Content-Type", "application/json");
         if (bearer != null) c.setRequestProperty("Authorization", "Bearer " + bearer);
         c.setDoOutput(true);
+
         try (OutputStream os = c.getOutputStream()) {
             os.write(body.toString().getBytes("UTF-8"));
         }
+
         int code = c.getResponseCode();
         InputStream is = (code >= 200 && code < 300) ? c.getInputStream() : c.getErrorStream();
         String resp = new BufferedReader(new InputStreamReader(is))
                 .lines().collect(Collectors.joining("\n"));
         c.disconnect();
-        if (code >= 200 && 299 >= code) return new JSONObject(resp);
-        throw new IOException("HTTP " + code + ": " + resp);
+
+        if (code >= 200 && code < 300) return resp.isEmpty() ? new JSONObject() : new JSONObject(resp);
+
+        // try to surface server message
+        try {
+            JSONObject err = new JSONObject(resp);
+            String msg = err.optString("message", resp);
+            throw new IOException("HTTP " + code + ": " + msg);
+        } catch (Exception ignore) {
+            throw new IOException("HTTP " + code + ": " + resp);
+        }
     }
 
     public JSONObject get(String path, String bearer) throws Exception {
@@ -34,12 +45,14 @@ public class ApiClient {
         HttpURLConnection c = (HttpURLConnection) url.openConnection();
         c.setRequestMethod("GET");
         if (bearer != null) c.setRequestProperty("Authorization", "Bearer " + bearer);
+
         int code = c.getResponseCode();
         InputStream is = (code >= 200 && code < 300) ? c.getInputStream() : c.getErrorStream();
         String resp = new BufferedReader(new InputStreamReader(is))
                 .lines().collect(Collectors.joining("\n"));
         c.disconnect();
-        if (code >= 200 && 299 >= code) return new JSONObject(resp);
+
+        if (code >= 200 && code < 300) return resp.isEmpty() ? new JSONObject() : new JSONObject(resp);
         throw new IOException("HTTP " + code + ": " + resp);
     }
 }

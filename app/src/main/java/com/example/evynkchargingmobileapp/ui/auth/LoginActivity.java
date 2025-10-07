@@ -15,7 +15,7 @@ import com.example.evynkchargingmobileapp.repo.AuthRepository;
 import com.example.evynkchargingmobileapp.util.Prefs;
 
 public class LoginActivity extends AppCompatActivity {
-    private EditText etUsername, etPassword;
+    private EditText etEmail, etPassword;
     private Button btnLogin;
     private TextView tvToRegister;
     private AuthRepository repo;
@@ -25,7 +25,14 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        etUsername = findViewById(R.id.etUsername);
+        // auto-skip if already logged in
+        String nic = Prefs.getCurrentNic(this);
+        if (nic != null) {
+            finish(); // already logged; replace with startActivity(new Intent(this, DashboardActivity.class));
+            return;
+        }
+
+        etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvToRegister = findViewById(R.id.tvToRegister);
@@ -38,21 +45,22 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void onLogin() {
-        String user = etUsername.getText().toString().trim();
-        String pass = etPassword.getText().toString();
-        if (user.isEmpty() || pass.isEmpty()) {
-            Toast.makeText(this, "Enter username and password.", Toast.LENGTH_SHORT).show();
+        String email = etEmail.getText().toString().trim();
+        String pass  = etPassword.getText().toString();
+
+        if (email.isEmpty() || pass.isEmpty()) {
+            Toast.makeText(this, "Enter email and password.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         btnLogin.setEnabled(false);
 
-        repo.login(user, pass, new AuthRepository.Callback<User>() {
+        repo.login(email, pass, new AuthRepository.Callback<User>() {
             @Override public void onSuccess(User data) {
                 main.post(() -> {
                     Prefs.setCurrentNic(LoginActivity.this, data.nic);
-                    Toast.makeText(LoginActivity.this, "Welcome " + data.name, Toast.LENGTH_SHORT).show();
-                    finish(); // or startActivity(new Intent(this, SomeDashboardActivity.class));
+                    Toast.makeText(LoginActivity.this, "Welcome " + (data.name == null ? "" : data.name), Toast.LENGTH_SHORT).show();
+                    finish(); // or startActivity(new Intent(this, DashboardActivity.class));
                 });
             }
 

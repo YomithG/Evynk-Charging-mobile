@@ -13,71 +13,81 @@ import com.example.evynkchargingmobileapp.net.ApiClient;
 import com.example.evynkchargingmobileapp.util.Prefs;
 
 public class AuthRepository {
+    private static final String BASE = "http://10.0.2.2:5000/api";
+    private static final String PATH_REGISTER_OWNER = "/Auth/register-owner";
+    private static final String PATH_LOGIN_OWNER    = "/Auth/login-owner";
+
     private final ApiClient api;
     private final UserDao dao;
     private final ExecutorService io = Executors.newSingleThreadExecutor();
 
-    // TODO: set your API root used by the web backend
     public AuthRepository(Context ctx) {
-        this.api = new ApiClient("https://YOUR-API-HOST");
+        this.api = new ApiClient(BASE);
         this.dao = new UserDao(ctx);
     }
 
     public interface Callback<T> { void onSuccess(T data); void onError(String msg); }
 
+    // Register (Owner self-register)
     public void register(User u, String password, Callback<User> cb) {
         io.execute(() -> {
             try {
                 JSONObject body = new JSONObject()
                         .put("nic", u.nic)
-                        .put("name", u.name)
-                        .put("email", u.email)
-                        .put("phone", u.phone)
+                        .put("fullName", u.name == null ? "" : u.name)
+                        .put("email", u.email == null ? "" : u.email)
+                        .put("phone", u.phone == null ? "" : u.phone)
                         .put("password", password);
 
-                // Adjust to your C# route & response shape
-                JSONObject res = api.post("/auth/register", body, null);
+                JSONObject res = api.post(PATH_REGISTER_OWNER, body, null);
 
-                JSONObject ju = res.getJSONObject("user");
-                String access = res.optString("accessToken", null);
-                String refresh = res.optString("refreshToken", null);
+                String token = res.optString("token", null);
+                JSONObject owner = res.optJSONObject("owner");
 
                 User saved = new User();
-                saved.nic = ju.getString("nic");
-                saved.name = ju.optString("name", "");
-                saved.email = ju.optString("email", "");
-                saved.phone = ju.optString("phone", "");
-                saved.status = ju.optInt("status", 1);
+                if (owner != null) {
+                    saved.nic   = owner.optString("nic", u.nic);
+                    saved.name  = owner.optString("fullName", u.name);
+                    saved.email = owner.optString("email", u.email);
+                    saved.phone = owner.optString("phone", u.phone);
+                    saved.status= owner.optBoolean("isActive", true) ? 1 : 0;
+                } else {
+                    saved = u; saved.status = 1;
+                }
 
                 dao.upsertUser(saved);
-                if (access != null) dao.saveTokens(saved.nic, access, refresh);
+                if (token != null) dao.saveTokens(saved.nic, token, null);
                 cb.onSuccess(saved);
             } catch (Exception e) { cb.onError(e.getMessage()); }
         });
     }
 
-    public void login(String usernameOrNic, String password, Callback<User> cb) {
+    // Login (Owner)
+    public void login(String email, String password, Callback<User> cb) {
         io.execute(() -> {
             try {
                 JSONObject body = new JSONObject()
-                        .put("username", usernameOrNic) // or "nic"/"email" per your API
+                        .put("email", email)
                         .put("password", password);
 
-                JSONObject res = api.post("/auth/login", body, null);
+                JSONObject res = api.post(PATH_LOGIN_OWNER, body, null);
 
-                JSONObject ju = res.getJSONObject("user");
-                String access = res.optString("accessToken", null);
-                String refresh = res.optString("refreshToken", null);
+                String token = res.optString("token", null);
+                JSONObject owner = res.optJSONObject("owner");
 
                 User saved = new User();
-                saved.nic = ju.getString("nic");
-                saved.name = ju.optString("name", "");
-                saved.email = ju.optString("email", "");
-                saved.phone = ju.optString("phone", "");
-                saved.status = ju.optInt("status", 1);
+                if (owner != null) {
+                    saved.nic   = owner.optString("nic", email);
+                    saved.name  = owner.optString("fullName", "");
+                    saved.email = owner.optString("email", email);
+                    saved.phone = owner.optString("phone", "");
+                    saved.status= owner.optBoolean("isActive", true) ? 1 : 0;
+                } else {
+                    saved.nic = email; saved.name = ""; saved.email = email; saved.phone = ""; saved.status = 1;
+                }
 
                 dao.upsertUser(saved);
-                if (access != null) dao.saveTokens(saved.nic, access, refresh);
+                if (token != null) dao.saveTokens(saved.nic, token, null);
 
                 cb.onSuccess(saved);
             } catch (Exception e) { cb.onError(e.getMessage()); }

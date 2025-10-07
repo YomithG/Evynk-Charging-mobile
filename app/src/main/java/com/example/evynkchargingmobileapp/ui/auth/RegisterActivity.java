@@ -15,7 +15,7 @@ import com.example.evynkchargingmobileapp.repo.AuthRepository;
 import com.example.evynkchargingmobileapp.util.Prefs;
 
 public class RegisterActivity extends AppCompatActivity {
-    private EditText etNic, etName, etEmail, etPhone, etPass;
+    private EditText etNic, etFullName, etEmail, etPhone, etPass;
     private Button btnRegister;
     private TextView tvToLogin;
     private AuthRepository repo;
@@ -25,13 +25,13 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        etNic = findViewById(R.id.etNic);
-        etName = findViewById(R.id.etName);
-        etEmail = findViewById(R.id.etEmail);
-        etPhone = findViewById(R.id.etPhone);
-        etPass = findViewById(R.id.etPass);
-        btnRegister = findViewById(R.id.btnRegister);
-        tvToLogin = findViewById(R.id.tvToLogin);
+        etNic      = findViewById(R.id.etNic);
+        etFullName = findViewById(R.id.etFullName);
+        etEmail    = findViewById(R.id.etEmail);
+        etPhone    = findViewById(R.id.etPhone);
+        etPass     = findViewById(R.id.etPass);
+        btnRegister= findViewById(R.id.btnRegister);
+        tvToLogin  = findViewById(R.id.tvToLogin);
 
         repo = new AuthRepository(this);
 
@@ -41,28 +41,28 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void onRegister() {
-        String nic = etNic.getText().toString().trim();
-        String name = etName.getText().toString().trim();
-        String email = etEmail.getText().toString().trim();
-        String phone = etPhone.getText().toString().trim();
+        String nic  = etNic.getText().toString().trim();
+        String name = etFullName.getText().toString().trim();
+        String email= etEmail.getText().toString().trim();
+        String phone= etPhone.getText().toString().trim();
         String pass = etPass.getText().toString();
 
-        if (nic.isEmpty() || name.isEmpty() || pass.length() < 6) {
-            Toast.makeText(this, "NIC, Name, and a 6+ char password are required.", Toast.LENGTH_SHORT).show();
+        if (nic.isEmpty() || name.isEmpty() || email.isEmpty() || pass.length() < 6) {
+            Toast.makeText(this, "NIC, Name, Email and 6+ char password are required.", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        btnRegister.setEnabled(false);
+
         User u = new User();
         u.nic = nic; u.name = name; u.email = email; u.phone = phone; u.status = 1;
-
-        btnRegister.setEnabled(false);
 
         repo.register(u, pass, new AuthRepository.Callback<User>() {
             @Override public void onSuccess(User data) {
                 main.post(() -> {
                     Prefs.setCurrentNic(RegisterActivity.this, data.nic);
                     Toast.makeText(RegisterActivity.this, "Registered!", Toast.LENGTH_SHORT).show();
-                    finish(); // or startActivity(new Intent(this, SomeDashboardActivity.class));
+                    finish(); // or startActivity(new Intent(this, NextActivity.class));
                 });
             }
             @Override public void onError(String msg) {
