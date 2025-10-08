@@ -1,9 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.EvynkChargingMobileApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <!-- Global dark theme (Material 3, no action bar) -->
+    <style name="Theme.EVynk.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Brand -->
+        <item name="colorPrimary">@color/brandPrimary</item>
+        <item name="colorOnPrimary">@color/brandOnPrimary</item>
+
+        <!-- Surfaces / background -->
+        <item name="android:windowBackground">@color/bg</item>
+        <!-- Use the android: variant to avoid missing-attr errors -->
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnBackground">@color/textPrimary</item>
+        <item name="colorOnSurface">@color/textPrimary</item>
+        <!-- (Optional) add materialDividerColor later when Material lib/SDK updated -->
+        <!-- <item name="materialDividerColor">@color/divider</item> -->
+
+        <!-- System bars -->
+        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:navigationBarColor">@color/bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <!-- Remove or move to values-v27 if minSdk < 27 -->
+        <!-- <item name="android:windowLightNavigationBar">false</item> -->
+
+        <!-- Shapes (rounded, soft) -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.EVynk.RoundXL</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.EVynk.RoundXL</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.EVynk.RoundXL</item>
+
+        <!-- Default widgets -->
+        <item name="buttonStyle">@style/Widget.EVynk.Button</item>
+        <item name="materialCardViewStyle">@style/Widget.EVynk.MaterialCard</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.EVynk.Body</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.EVynk.Title</item>
+
+        <!-- Keep dynamic force-dark off; we control colors -->
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 
-    <style name="Theme.EvynkChargingMobileApp" parent="Base.Theme.EvynkChargingMobileApp" />
+    <!-- ✅ Proper ShapeAppearance style used by Material 3 -->
+    <style name="ShapeAppearance.EVynk.RoundXL" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <!-- Button style: bright green, rounded, bold label -->
+    <style name="Widget.EVynk.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/brandPrimary</item>
+        <item name="android:textColor">@color/brandOnPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.EVynk.RoundXL</item>
+    </style>
+
+    <!-- Card style: matte dark card with subtle outline -->
+    <style name="Widget.EVynk.MaterialCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/card</item>
+        <item name="strokeColor">@color/outline</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.EVynk.RoundXL</item>
+    </style>
+
+    <!-- Typography -->
+    <style name="TextAppearance.EVynk.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
+
+    <style name="TextAppearance.EVynk.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/textSecondary</item>
+    </style>
+
 </resources>

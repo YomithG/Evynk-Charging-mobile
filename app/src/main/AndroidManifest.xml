@@ -5,7 +5,7 @@
     <application
         android:allowBackup="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:theme="@style/Theme.EVynk.Dark"
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config">
 
@@ -22,5 +22,17 @@
         <activity android:name=".ui.auth.RegisterActivity" />
         <activity android:name=".ui.dashboard.DashboardActivity" />
         <activity android:name=".ui.dashboard.EditProfileActivity" />
+
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.EVynk.Dark" />
+
+        <activity
+            android:name=".ui.reservations.OwnerReservationsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.EVynk.Dark" />
+
+
     </application>
 </manifest>

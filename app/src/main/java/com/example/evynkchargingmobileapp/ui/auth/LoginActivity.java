@@ -16,6 +16,7 @@ import com.example.evynkchargingmobileapp.R;
 import com.example.evynkchargingmobileapp.data.model.User;
 import com.example.evynkchargingmobileapp.repo.AuthRepository;
 import com.example.evynkchargingmobileapp.ui.dashboard.DashboardActivity;
+import com.example.evynkchargingmobileapp.ui.home.HomeActivity;
 import com.example.evynkchargingmobileapp.util.Prefs;
 
 public class LoginActivity extends AppCompatActivity {
@@ -32,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         // auto-skip if already logged in
         String nic = Prefs.getCurrentNic(this);
         if (nic != null) {
-            startActivity(new Intent(this, DashboardActivity.class));
+            startActivity(new Intent(this, HomeActivity.class));
             finish();
             return;
         }
@@ -67,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this,
                             "Welcome " + (data.name == null ? "" : data.name),
                             Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                     finish();
                 });
             }
