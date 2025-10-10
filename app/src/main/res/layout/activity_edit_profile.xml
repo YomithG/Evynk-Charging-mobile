@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,14 +16,14 @@
             android:text="Edit profile"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#101418" />
+            android:textColor="#FFFFFF" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Keep your details up to date."
-            android:textSize="14sp"
-            android:textColor="#6B7280"
+            android:textSize="16sp"
+            android:textColor="#7C8796"
             android:layout_marginTop="4dp" />
 
         <View
@@ -38,15 +38,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Full name"
-            android:textColor="#6B7280"
+            android:textColor="#FFFFFF"
             android:textSize="12sp" />
         <EditText
             android:id="@+id/etFullName"
+            android:background="@drawable/bg_card_inset"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="#F3F4F6"
             android:padding="12dp"
-            android:textColor="#111827"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:hint="Jane E. Vynk"
             android:layout_marginBottom="14dp" />
@@ -56,16 +56,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Phone"
-            android:textColor="#6B7280"
+            android:textColor="#FFFFFF"
             android:textSize="12sp" />
         <EditText
             android:id="@+id/etPhone"
+            android:background="@drawable/bg_card_inset"
             android:inputType="phone"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="#F3F4F6"
             android:padding="12dp"
-            android:textColor="#111827"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:hint="07XXXXXXXX"
             android:layout_marginBottom="24dp" />
@@ -77,7 +77,7 @@
             android:layout_height="48dp"
             android:text="Save changes"
             android:textAllCaps="false"
-            android:backgroundTint="#10B981" />
+            android:backgroundTint="#CD7434" />
 
         <View
             android:layout_width="match_parent"

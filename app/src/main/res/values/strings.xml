@@ -1,3 +1,54 @@
 <resources>
-    <string name="app_name">Evynk charging mobile app</string>
+
+    <!-- App name -->
+    <string name="app_name">EVynk Charging</string>
+
+    <!-- Common actions -->
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="close">Close</string>
+    <string name="share">Share</string>
+    <string name="save">Save</string>
+
+    <!-- Filters -->
+    <string name="filter_pending">Pending</string>
+    <string name="filter_approved">Approved</string>
+    <string name="filter_cancelled">Cancelled</string>
+
+    <!-- Reservation fields -->
+    <string name="reservation_id">Reservation ID</string>
+    <string name="station">Station</string>
+    <string name="reserved_for">Reserved for</string>
+    <string name="owner_nic">Owner NIC</string>
+
+    <!-- QR related -->
+    <string name="show_qr">Show QR</string>
+    <string name="share_qr">Share QR</string>
+    <string name="save_to_gallery">Save to Gallery</string>
+    <string name="saved_to_gallery">QR saved to Gallery</string>
+    <string name="loading_qr">Loading QR…</string>
+    <string name="error_loading_qr">Failed to load QR</string>
+
+    <!-- Toolbar / titles -->
+    <string name="my_reservations">My Reservations</string>
+    <string name="reservation_details">Reservation Details</string>
+
+    <!-- Toasts / messages -->
+    <string name="delete_confirmation">Delete reservation?</string>
+    <string name="delete_warning">This action cannot be undone.</string>
+    <string name="reservation_deleted">Reservation deleted 🗑️</string>
+    <string name="reservation_not_found">Reservation not found</string>
+    <string name="not_authenticated">Not authenticated</string>
+    <string name="network_error">Network error</string>
+    <string name="save_failed">Failed to save image</string>
+
+    <string name="open_in_maps">Open in Maps</string>
+
+    <string name="location">Location</string>
+
+    <!-- Reservation filter labels -->
+    <string name="pending">Pending</string>
+    <string name="approved">Approved</string>
+    <string name="cancelled">Cancelled</string>
+
 </resources>

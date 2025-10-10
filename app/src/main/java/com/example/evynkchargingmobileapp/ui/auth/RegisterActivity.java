@@ -40,6 +40,11 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(new Intent(this, LoginActivity.class)));
     }
 
+    private void setLoading(boolean loading) {
+        btnRegister.setEnabled(!loading);
+        btnRegister.setAlpha(loading ? 0.6f : 1f);
+    }
+
     private void onRegister() {
         String nic  = etNic.getText().toString().trim();
         String name = etFullName.getText().toString().trim();
@@ -52,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        btnRegister.setEnabled(false);
+        setLoading(true);
 
         User u = new User();
         u.nic = nic; u.name = name; u.email = email; u.phone = phone; u.status = 1;
@@ -60,14 +65,15 @@ public class RegisterActivity extends AppCompatActivity {
         repo.register(u, pass, new AuthRepository.Callback<User>() {
             @Override public void onSuccess(User data) {
                 main.post(() -> {
+                    setLoading(false);
                     Prefs.setCurrentNic(RegisterActivity.this, data.nic);
                     Toast.makeText(RegisterActivity.this, "Registered!", Toast.LENGTH_SHORT).show();
-                    finish(); // or startActivity(new Intent(this, NextActivity.class));
+                    finish();
                 });
             }
             @Override public void onError(String msg) {
                 main.post(() -> {
-                    btnRegister.setEnabled(true);
+                    setLoading(false);
                     Toast.makeText(RegisterActivity.this, "Register failed: " + msg, Toast.LENGTH_LONG).show();
                 });
             }

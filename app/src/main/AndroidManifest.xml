@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -33,6 +36,42 @@
             android:exported="false"
             android:theme="@style/Theme.EVynk.Dark" />
 
+        <activity android:name=".ui.reservations.BookSlotActivity" />
+
+        <activity
+            android:name=".ui.reservations.EditReservationActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ui.reservations.ReservationDetailsActivity"
+            android:exported="false" />
+
+        <activity android:name=".ui.reservations.BookingHistoryActivity" />
+
+        <!-- Google Maps API key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key"/>
+
+
+        <!-- Station Map Activity -->
+        <activity
+            android:name=".ui.reservations.StationMapActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ui.stations.FindStationActivity"
+            android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
     </application>
 </manifest>

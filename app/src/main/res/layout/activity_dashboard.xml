@@ -36,6 +36,7 @@
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.EVynk.MaterialCard"
             android:layout_width="match_parent"
+            android:background="@drawable/bg_card_inset"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp">
 

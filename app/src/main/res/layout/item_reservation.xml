@@ -4,47 +4,75 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="@color/surface"
-    app:strokeColor="@color/outline"
-    app:strokeWidth="1dp">
+    app:cardBackgroundColor="@color/bg"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="1dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="14dp">
+        android:background="@drawable/bg_card_inset"
+        android:padding="12dp">
 
         <TextView
             android:id="@+id/txtStationName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Station name"
-            android:textSize="18sp"
+            android:textStyle="bold"
             android:textColor="@color/textPrimary"
-            android:textStyle="bold" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/txtWhen"
+            android:layout_below="@id/txtStationName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sun, 12 Oct • 09:30"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/textPrimary" />
+            android:textColor="@color/textPrimary"
+            android:layout_marginTop="4dp" />
 
         <TextView
             android:id="@+id/txtStatus"
+            android:layout_below="@id/txtWhen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pending"
-            android:layout_marginTop="6dp"
-            android:textColor="@color/textPrimary" />
+            android:textColor="@color/teal_200"
+            android:layout_marginTop="6dp" />
 
-        <TextView
-            android:id="@+id/txtSub"
+        <!-- Actions (right side) -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Owner: 1999… • #68e691"
-            android:layout_marginTop="2dp"
-            android:textColor="@color/textMuted" />
-    </LinearLayout>
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnEdit"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/edit"
+                android:src="@drawable/edit"
+                app:tint="@color/textPrimary" />
+
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/delete"
+                android:src="@drawable/delete"
+                app:tint="@color/error" />
+
+            <ImageButton
+                android:id="@+id/btnQr"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/show_qr"
+                android:src="@drawable/vector"
+                app:tint="@color/textPrimary" />
+        </LinearLayout>
+
+    </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

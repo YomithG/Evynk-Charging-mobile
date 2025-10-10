@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg"
+    android:background="#0D0F14"
     android:orientation="vertical">
 
     <!-- Top App Bar -->
@@ -11,18 +11,15 @@
         android:id="@+id/topAppBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/bg"
+        android:background="#0D0F14"
         app:title="Welcome"
-        app:titleTextColor="@color/textPrimary"
+        app:titleTextColor="#E6EAF0"
         app:menu="@menu/menu_home" />
 
-    <!-- Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true"
-        android:background="@color/bg">
+        android:layout_height="match_parent"
+        android:overScrollMode="never">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,15 +27,42 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Section title -->
+            <!-- HERO: full-bleed car image -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardHero"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:background="@drawable/bg_card_inset"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="16dp"
+                app:cardUseCompatPadding="false"
+                app:cardPreventCornerOverlap="true"
+                android:clipToOutline="true">
+
+                <ImageView
+                    android:id="@+id/ivHeroCar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"
+                    android:background="#0D0F14"
+                    android:src="@mipmap/hero_car_foreground" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ROW: Station details + full-bleed mini map -->
+
+            <!-- QUICK ACTIONS (unchanged IDs & behavior) -->
             <TextView
-                style="@style/TextAppearance.EVynk.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Quick actions"
-                android:textSize="20sp" />
+                android:textColor="#E6EAF0"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginTop="18dp" />
 
             <!-- Row 1 -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -47,47 +71,55 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardFindStation"
-                    style="@style/Widget.EVynk.MaterialCard"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp">
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_card_inset"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="16dp"
+                    android:clipToOutline="true">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="vertical"
+                        android:background="#0D0F14"
                         android:gravity="center"
+                        android:orientation="vertical"
                         android:padding="12dp">
 
                         <ImageView
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:src="@drawable/ic_map"
-                            android:tint="@color/textPrimary" />
+                            app:tint="#E6EAF0" />
 
                         <TextView
-                            style="@style/TextAppearance.EVynk.Body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="Find station"
-                            android:textColor="@color/textPrimary" />
+                            android:textColor="#E6EAF0"
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardMyReservations"
-                    style="@style/Widget.EVynk.MaterialCard"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp">
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_card_inset"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="16dp"
+                    android:clipToOutline="true">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:background="#0D0F14"
                         android:gravity="center"
                         android:padding="12dp">
 
@@ -95,15 +127,15 @@
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:src="@drawable/ic_calendar"
-                            android:tint="@color/textPrimary" />
+                            android:tint="#E6EAF0" />
 
                         <TextView
-                            style="@style/TextAppearance.EVynk.Body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="My reservations"
-                            android:textColor="@color/textPrimary" />
+                            android:textColor="#E6EAF0"
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -116,69 +148,527 @@
                 android:layout_marginTop="12dp">
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardScanQr"
-                    style="@style/Widget.EVynk.MaterialCard"
+                    android:id="@+id/cardBookSlot"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp">
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_card_inset"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="16dp"
+                    android:clipToOutline="true">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
                         android:gravity="center"
+                        android:background="#0D0F14"
                         android:padding="12dp">
 
                         <ImageView
                             android:layout_width="28dp"
                             android:layout_height="28dp"
-                            android:src="@drawable/ic_qr"
-                            android:tint="@color/textPrimary" />
+                            android:src="@drawable/ic_calendar_add"
+                            app:tint="#E6EAF0" />
 
                         <TextView
-                            style="@style/TextAppearance.EVynk.Body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Scan QR"
-                            android:textColor="@color/textPrimary" />
+                            android:text="Book reservation"
+                            android:textColor="#E6EAF0"
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardSupport"
-                    style="@style/Widget.EVynk.MaterialCard"
+                    android:id="@+id/cardBookingHistory"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp">
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_card_inset"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="16dp"
+                    android:clipToOutline="true">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
                         android:gravity="center"
+                        android:background="#0D0F14"
                         android:padding="12dp">
 
                         <ImageView
                             android:layout_width="28dp"
                             android:layout_height="28dp"
-                            android:src="@drawable/ic_help"
-                            android:tint="@color/textPrimary" />
+                            android:src="@drawable/ic_history"
+                            app:tint="#E6EAF0" />
 
                         <TextView
-                            style="@style/TextAppearance.EVynk.Body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Support"
-                            android:textColor="@color/textPrimary" />
+                            android:text="Booking history"
+                            android:textColor="#E6EAF0"
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
+            <!-- ===== NEW ===== Booking status (5 cards) below Quick actions -->
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="Maps Codes"
+                android:textColor="#E6EAF0"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <!-- Charging Station details -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardStationDetails"
+                    android:layout_width="0dp"
+                    android:layout_height="160dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card_inset"
+                    android:clipToOutline="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:cardPreventCornerOverlap="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#0D0F14"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_map_pin"
+                                android:tint="#FF4B4B" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Monte Station"
+                                android:textColor="#E6EAF0"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="5072 Highway 7 Felton, California, U.S"
+                            android:textColor="#A5ADBA"
+                            android:textSize="12sp" />
+
+                        <!-- distance/time chips -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="28dp"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/bg_chip_neutral"
+                                android:gravity="center_vertical"
+                                android:paddingLeft="10dp"
+                                android:paddingRight="10dp"
+                                android:text="4.3 Mile"
+                                android:textColor="#E6EAF0"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="28dp"
+                                android:background="@drawable/bg_chip_neutral"
+                                android:gravity="center_vertical"
+                                android:paddingLeft="10dp"
+                                android:paddingRight="10dp"
+                                android:text="62 Min"
+                                android:textColor="#E6EAF0"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <!-- small CTA row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/location"
+                                app:tint="#00C853" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:text="Navigate"
+                                android:textColor="#E6EAF0"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Full-bleed mini map -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardMiniMap"
+                    android:layout_width="0dp"
+                    android:layout_height="160dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card_inset"
+                    android:clipToOutline="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:cardPreventCornerOverlap="true"
+                    app:cardUseCompatPadding="false">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:background="#0D0F14"
+                        android:scaleType="centerCrop"
+                        android:src="@mipmap/map_preview_foreground" />
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your status"
+                android:textColor="#E6EAF0"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginTop="18dp" />
+
+            <!-- Row A: Next reservation + Nearby availability -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <!-- Next reservation -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="110dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_card_inset"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    android:clipToOutline="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:background="#0D0F14"
+                        android:padding="14dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_calendar"
+                                app:tint="#00C853" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Next reservation"
+                                android:textColor="#E6EAF0"
+                                android:textStyle="bold"
+                                android:textSize="14sp"
+                                android:layout_marginStart="8dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sat, 18 Oct • 08:30"
+                            android:textColor="#E6EAF0"
+                            android:textSize="14sp"
+                            android:layout_marginTop="8dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Balapitiya • DC"
+                            android:textColor="#A5ADBA"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Nearby availability -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="110dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_card_inset"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    android:clipToOutline="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#0D0F14"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_map_pin"
+                                app:tint="#00C853" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nearby availability"
+                                android:textColor="#E6EAF0"
+                                android:textStyle="bold"
+                                android:textSize="14sp"
+                                android:layout_marginStart="8dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="3 stations • 6 free slots"
+                            android:textColor="#E6EAF0"
+                            android:textSize="14sp"
+                            android:layout_marginTop="8dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="within 5 km radius"
+                            android:textColor="#A5ADBA"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Row B: Current rate + Wallet -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <!-- Current rate -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="110dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_card_inset"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    android:clipToOutline="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#0D0F14"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/clock"
+                                android:tint="#00C853" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Current rate"
+                                android:textColor="#E6EAF0"
+                                android:textStyle="bold"
+                                android:textSize="14sp"
+                                android:layout_marginStart="8dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="LKR 95.00 / kWh"
+                            android:textColor="#E6EAF0"
+                            android:textSize="18sp"
+                            android:layout_marginTop="8dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="off-peak until 9:00 AM"
+                            android:textColor="#A5ADBA"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Wallet -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="110dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_card_inset"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    android:clipToOutline="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#0D0F14"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/clock"
+                                android:tint="#00C853" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Wallet"
+                                android:textColor="#E6EAF0"
+                                android:textStyle="bold"
+                                android:textSize="14sp"
+                                android:layout_marginStart="8dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="LKR 1,250.00"
+                            android:textColor="#E6EAF0"
+                            android:textSize="18sp"
+                            android:layout_marginTop="8dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Top up before next session"
+                            android:textColor="#A5ADBA"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Row C: Help (single card) -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card_inset"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                android:clipToOutline="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:background="#0D0F14"
+                    android:gravity="center_vertical"
+                    android:padding="14dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_help"
+                        android:tint="#00C853" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Need help?"
+                            android:textColor="#E6EAF0"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="24/7 support • Live chat"
+                            android:textColor="#A5ADBA"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
 </LinearLayout>

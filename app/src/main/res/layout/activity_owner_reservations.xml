@@ -11,8 +11,44 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/bg"
-        app:title="My upcoming reservations"
+        app:title="My reservations"
         app:titleTextColor="@color/textPrimary" />
+
+    <!-- Filters -->
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/filterGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="4dp"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFilterPending"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/pending" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFilterApproved"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/approved" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFilterCancelled"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cancelled" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -26,18 +62,16 @@
             android:padding="12dp"
             android:clipToPadding="false" />
 
-        <!-- Empty state -->
         <TextView
             android:id="@+id/emptyView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="No upcoming reservations"
+            android:text="No reservations"
             android:textSize="16sp"
             android:textColor="@color/textMuted"
             android:visibility="gone" />
 
-        <!-- Progress -->
         <ProgressBar
             android:id="@+id/progress"
             style="?android:attr/progressBarStyleLarge"

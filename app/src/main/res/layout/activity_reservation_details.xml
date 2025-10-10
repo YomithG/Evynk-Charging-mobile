@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/bg"
+        app:titleTextColor="@color/textPrimary" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Title + status -->
+            <TextView
+                android:id="@+id/txtTitle"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/textPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtStatus"
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"
+                android:textColor="@color/teal_200"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- Details card -->
+            <LinearLayout
+                android:layout_marginTop="16dp"
+                android:padding="12dp"
+                android:background="@drawable/bg_card_inset"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="@string/station"
+                    android:textColor="@color/textMuted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/txtStation"
+                    android:textColor="@color/textPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <View android:layout_width="match_parent" android:layout_height="8dp"/>
+
+                <TextView
+                    android:text="@string/reserved_for"
+                    android:textColor="@color/textMuted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/txtWhen"
+                    android:textColor="@color/textPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <!-- Map card -->
+            <LinearLayout
+                android:layout_marginTop="16dp"
+                android:padding="12dp"
+                android:background="@drawable/bg_card_inset"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="@string/location"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <!-- Use a real SupportMapFragment -->
+                <fragment
+                    android:id="@+id/mapFragment"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_marginTop="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageButton
+                        android:id="@+id/btnOpenMaps"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/location"
+                        android:contentDescription="@string/open_in_maps"
+                        app:tint="@color/textPrimary" />
+
+                    <TextView
+                        android:id="@+id/tvShowQr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Get Directions"
+                        android:textStyle="bold"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="16sp"
+                        android:layout_marginStart="8dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- QR section (visible only if Approved) -->
+            <LinearLayout
+                android:id="@+id/qrCard"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:background="@drawable/bg_card_inset"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <TextView
+                    android:text="@string/show_qr"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <ProgressBar
+                    android:id="@+id/qrProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"/>
+
+                <ImageView
+                    android:id="@+id/qrImage"
+                    android:layout_marginTop="12dp"
+                    android:layout_width="220dp"
+                    android:layout_height="220dp"
+                    android:contentDescription="@string/show_qr"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btnShare"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_share_24"
+                        android:contentDescription="@string/share_qr"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:tint="@color/textPrimary" />
+
+                    <ImageButton
+                        android:id="@+id/btnSave"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_download_24"
+                        android:contentDescription="@string/save_to_gallery"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="8dp"
+                        app:tint="@color/textPrimary" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

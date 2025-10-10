@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- background rectangle -->
+    <path
+        android:fillColor="#FFE0E0E0"
+        android:pathData="M0,0h120v120h-120z" />
+    <!-- grid lines -->
+    <path
+        android:strokeColor="#FFBDBDBD"
+        android:strokeWidth="1"
+        android:pathData="M0,20h120 M0,40h120 M0,60h120 M0,80h120 M0,100h120
+                          M20,0v120 M40,0v120 M60,0v120 M80,0v120 M100,0v120" />
+</vector>

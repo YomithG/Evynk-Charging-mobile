@@ -1,34 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:fillViewport="true" android:padding="24dp"
-    android:layout_width="match_parent" android:layout_height="match_parent">
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent" android:layout_height="wrap_content">
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0D0F14">
 
-        <EditText android:id="@+id/etNic"   android:hint="NIC"
-            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText android:id="@+id/etFullName" android:hint="Full name"
-            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <EditText android:id="@+id/etEmail" android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create an Account"
+                android:textColor="#E6EAF0"
+                android:textStyle="bold"
+                android:textSize="20sp" />
 
-        <EditText android:id="@+id/etPhone" android:hint="Phone"
-            android:inputType="phone"
-            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/tvToLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already a member? Sign in"
+                android:textColor="#A5ADBA"
+                android:textSize="13sp"
+                android:layout_marginTop="2dp" />
 
-        <EditText android:id="@+id/etPass"  android:hint="Password"
-            android:inputType="textPassword"
-            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            <!-- NIC -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NIC"
+                android:textColor="#C7CFD9"
+                android:textSize="13sp"
+                android:layout_marginTop="16dp" />
 
-        <Button android:id="@+id/btnRegister" android:text="Create account"
-            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="filled"
+                app:boxBackgroundColor="#151A21"
+                app:boxStrokeColor="#2E3743"
+                app:boxStrokeWidth="1dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_id_card"
+                app:endIconTint="#7C8796">
 
-        <TextView android:id="@+id/tvToLogin" android:text="Already have an account? Log in"
-            android:paddingTop="12dp"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-    </LinearLayout>
-</ScrollView>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNic"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:hint="Enter your NIC"
+                    android:textColor="#E6EAF0"
+                    android:textColorHint="#7C8796"
+                    android:inputType="textCapCharacters" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Full name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Full name"
+                android:textColor="#C7CFD9"
+                android:textSize="13sp"
+                android:layout_marginTop="12dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="filled"
+                app:boxBackgroundColor="#151A21"
+                app:boxStrokeColor="#2E3743"
+                app:boxStrokeWidth="1dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_user"
+                app:endIconTint="#7C8796">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFullName"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:hint="Enter your name"
+                    android:textColor="#E6EAF0"
+                    android:textColorHint="#7C8796"
+                    android:inputType="textPersonName" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textColor="#C7CFD9"
+                android:textSize="13sp"
+                android:layout_marginTop="12dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="filled"
+                app:boxBackgroundColor="#151A21"
+                app:boxStrokeColor="#2E3743"
+                app:boxStrokeWidth="1dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_mail"
+                app:endIconTint="#7C8796">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:hint="Enter your email"
+                    android:textColor="#E6EAF0"
+                    android:textColorHint="#7C8796"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Phone -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone"
+                android:textColor="#C7CFD9"
+                android:textSize="13sp"
+                android:layout_marginTop="12dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="filled"
+                app:boxBackgroundColor="#151A21"
+                app:boxStrokeColor="#2E3743"
+                app:boxStrokeWidth="1dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_phone"
+                app:endIconTint="#7C8796">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:hint="Enter your phone number"
+                    android:textColor="#E6EAF0"
+                    android:textColorHint="#7C8796"
+                    android:inputType="phone" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Password -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:textColor="#C7CFD9"
+                android:textSize="13sp"
+                android:layout_marginTop="12dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="filled"
+                app:boxBackgroundColor="#151A21"
+                app:boxStrokeColor="#2E3743"
+                app:boxStrokeWidth="1dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:endIconMode="password_toggle"
+                app:endIconTint="#7C8796">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPass"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:hint="Create a password"
+                    android:textColor="#E6EAF0"
+                    android:textColorHint="#7C8796"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- CTA -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="18dp"
+                android:text="Create Account"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:background="@drawable/bg_btn_primary"
+                app:rippleColor="#33FFFFFF" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="12dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

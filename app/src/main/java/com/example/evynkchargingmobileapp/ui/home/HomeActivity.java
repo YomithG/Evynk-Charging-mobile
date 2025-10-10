@@ -2,10 +2,10 @@ package com.example.evynkchargingmobileapp.ui.home;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -17,11 +17,10 @@ import com.google.android.material.appbar.MaterialToolbar;
 
 public class HomeActivity extends AppCompatActivity {
 
-    // FQCN targets (adjust to your actual package names if different)
-    private static final String FQCN_FIND_STATION    = "com.example.evynkchargingmobileapp.ui.stations.FindStationActivity";
-    private static final String FQCN_MY_RESERVATIONS = "com.example.evynkchargingmobileapp.ui.reservations.OwnerReservationsActivity";
-    private static final String FQCN_SCAN_QR         = "com.example.evynkchargingmobileapp.ui.scan.ScanQrActivity";
-    private static final String FQCN_SUPPORT         = "com.example.evynkchargingmobileapp.ui.support.SupportActivity";
+    private static final String FQCN_FIND_STATION     = "com.example.evynkchargingmobileapp.ui.stations.FindStationActivity";
+    private static final String FQCN_MY_RESERVATIONS  = "com.example.evynkchargingmobileapp.ui.reservations.OwnerReservationsActivity";
+    private static final String FQCN_BOOK_RESERVATION = "com.example.evynkchargingmobileapp.ui.reservations.BookSlotActivity";
+    private static final String FQCN_BOOKING_HISTORY  = "com.example.evynkchargingmobileapp.ui.reservations.BookingHistoryActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,31 +28,40 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         MaterialToolbar topAppBar = findViewById(R.id.topAppBar);
-        setSupportActionBar(topAppBar);
+        if (topAppBar != null) setSupportActionBar(topAppBar);
 
-        // Resolve the user's name (Intent extra > SharedPreferences > fallback)
         String fullName = getIntent().getStringExtra("full_name");
         if (fullName == null || fullName.trim().isEmpty()) {
             SharedPreferences sp = getSharedPreferences("user_profile", MODE_PRIVATE);
             fullName = sp.getString("fullName", "User");
         }
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Welcome, " + fullName);
+            getSupportActionBar().setTitle("Welcome to EVynk");
         }
 
-        // Quick actions
-        findViewById(R.id.cardFindStation).setOnClickListener(v ->
-                launchIfExists(FQCN_FIND_STATION, "Find Station"));
+        // Quick action cards (IDs kept the same)
+        setClickIfPresent(R.id.cardFindStation, v -> launchIfExists(FQCN_FIND_STATION, "Find Station"));
 
-        // Pass JWT to "My reservations"
-        findViewById(R.id.cardMyReservations).setOnClickListener(v -> {
+        setClickIfPresent(R.id.cardBookSlot, v -> {
+            String token = readToken();
+            try {
+                Class<?> clazz = Class.forName(FQCN_BOOK_RESERVATION);
+                Intent intent = new Intent(this, clazz);
+                if (token != null && !token.trim().isEmpty()) intent.putExtra("token", token);
+                startActivity(intent);
+            } catch (ClassNotFoundException e) {
+                Toast.makeText(this, "Book Reservation screen not available yet.", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "Unable to open Book Reservation: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        setClickIfPresent(R.id.cardMyReservations, v -> {
             String token = readToken();
             try {
                 Class<?> clazz = Class.forName(FQCN_MY_RESERVATIONS);
                 Intent intent = new Intent(this, clazz);
-                if (token != null && !token.trim().isEmpty()) {
-                    intent.putExtra("token", token);
-                }
+                if (token != null && !token.trim().isEmpty()) intent.putExtra("token", token);
                 startActivity(intent);
             } catch (ClassNotFoundException e) {
                 Toast.makeText(this, "My Reservations screen not available yet.", Toast.LENGTH_SHORT).show();
@@ -62,28 +70,24 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.cardScanQr).setOnClickListener(v ->
-                launchIfExists(FQCN_SCAN_QR, "Scan QR"));
-
-        findViewById(R.id.cardSupport).setOnClickListener(v -> {
-            // If SupportActivity exists, launch it; otherwise open email composer
-            if (!launchIfExists(FQCN_SUPPORT, "Support")) {
-                Intent email = new Intent(Intent.ACTION_SENDTO);
-                email.setData(Uri.parse("mailto:"));
-                email.putExtra(Intent.EXTRA_EMAIL, new String[]{"support@evynk.app"});
-                email.putExtra(Intent.EXTRA_SUBJECT, "EVynk Support");
-                try {
-                    startActivity(Intent.createChooser(email, "Contact support"));
-                } catch (Exception ex) {
-                    Toast.makeText(this, "No email app installed.", Toast.LENGTH_SHORT).show();
-                }
+        setClickIfPresent(R.id.cardBookingHistory, v -> {
+            String token = readToken();
+            try {
+                Class<?> clazz = Class.forName(FQCN_BOOKING_HISTORY);
+                Intent intent = new Intent(this, clazz);
+                if (token != null && !token.trim().isEmpty()) intent.putExtra("token", token);
+                startActivity(intent);
+            } catch (ClassNotFoundException e) {
+                Toast.makeText(this, "Booking History screen not available yet.", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "Unable to open Booking History: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_home, menu); // profile icon
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
@@ -96,7 +100,11 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /** Try launching activity by FQCN; if not found, show a friendly toast. */
+    private void setClickIfPresent(int viewId, View.OnClickListener l) {
+        View v = findViewById(viewId);
+        if (v != null) v.setOnClickListener(l);
+    }
+
     private boolean launchIfExists(String fqcn, String screenLabel) {
         try {
             Class<?> clazz = Class.forName(fqcn);
@@ -105,16 +113,12 @@ public class HomeActivity extends AppCompatActivity {
         } catch (ClassNotFoundException e) {
             Toast.makeText(this, screenLabel + " screen not available yet.", Toast.LENGTH_SHORT).show();
             return false;
-        } catch (android.content.ActivityNotFoundException e) {
-            Toast.makeText(this, screenLabel + " not declared in AndroidManifest.xml.", Toast.LENGTH_LONG).show();
-            return false;
         } catch (Exception e) {
             Toast.makeText(this, "Unable to open " + screenLabel + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
             return false;
         }
     }
 
-    // in HomeActivity
     private @Nullable String readToken() {
         String nic = com.example.evynkchargingmobileapp.util.Prefs.getCurrentNic(this);
         if (nic != null && !nic.trim().isEmpty()) {
