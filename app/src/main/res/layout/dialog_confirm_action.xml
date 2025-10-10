@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="20dp"
+    android:background="@drawable/bg_dialog_rounded"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:elevation="12dp"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_margin="24dp">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:text="Are you sure?"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/dialogMessage"
+        android:text="Once you perform this action, this booking will be removed from the active list."
+        android:textColor="#A5ADBA"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/btnCancelDialog"
+            android:layout_weight="1"
+            android:text="No, back"
+            android:backgroundTint="#334155"
+            android:textColor="#FFFFFF"
+            android:layout_width="0dp"
+            android:layout_height="42dp"/>
+
+        <Space android:layout_width="12dp" android:layout_height="0dp"/>
+
+        <Button
+            android:id="@+id/btnConfirmDialog"
+            android:layout_weight="1"
+            android:text="Yes, confirm"
+            android:backgroundTint="#16a34a"
+            android:textColor="#FFFFFF"
+            android:layout_width="0dp"
+            android:layout_height="42dp"/>
+    </LinearLayout>
+
+</LinearLayout>

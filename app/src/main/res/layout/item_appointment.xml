@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardBackgroundColor="#151A21"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="12dp"
     app:strokeColor="#2E3743"
     app:strokeWidth="1dp">
 
@@ -21,7 +21,8 @@
             android:layout_height="wrap_content"
             android:text="Owner NIC: 200145678V"
             android:textColor="#E6EAF0"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/tvStatus"
@@ -40,6 +41,47 @@
             android:textColor="#A5ADBA"
             android:textSize="14sp"
             android:layout_marginTop="4dp"/>
-    </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2E3743"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnComplete"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:text="Complete"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="@null"
+                android:background="@drawable/btn_complete"
+                app:cornerRadius="10dp"
+                app:rippleColor="#66FFFFFF" />
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancel"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:text="Cancel"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="@null"
+                android:background="@drawable/btn_cancel"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

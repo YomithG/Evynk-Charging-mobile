@@ -23,6 +23,10 @@
         </activity>
 
         <activity
+            android:name=".ui.operator.ReservationHistoryActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.operator.StationOperatorSlotsMockActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
@@ -95,6 +99,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <activity
+            android:name=".ui.operator.AppointmentsActivity"
+            android:exported="false" />
 
         <!-- Google Maps API key -->
         <meta-data

@@ -7,16 +7,16 @@
     android:background="#10151A">
 
     <TextView
-        android:id="@+id/tvActiveBookingsCount"
+        android:id="@+id/tvHistoryCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Active Appointments: 0"
+        android:text="Reservations: 0"
         android:textColor="#E6EAF0"
         android:textSize="18sp"
         android:layout_marginBottom="12dp" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvActiveBookings"
+        android:id="@+id/rvHistory"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false" />

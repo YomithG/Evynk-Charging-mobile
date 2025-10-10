@@ -1,6 +1,7 @@
 package com.example.evynkchargingmobileapp.ui.operator;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -21,18 +22,20 @@ public class StationOperatorHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station_operator_home);
 
-        // Guard: ensure operator is logged in (uses StationOperatorPrefs, not owner prefs)
+        // Guard: ensure operator is logged in
         if (StationOperatorPrefs.getId(this) == null) {
             Toast.makeText(this, "Please log in as station operator.", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
+        // Toolbar actions
         MaterialToolbar toolbar = findViewById(R.id.topAppBar);
         toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_logout) {
                 StationOperatorPrefs.clear(this);
+                Toast.makeText(this, "Logged out.", Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
             }
@@ -48,7 +51,17 @@ public class StationOperatorHomeActivity extends AppCompatActivity {
         btnSlots.setOnClickListener(v ->
                 startActivity(new Intent(this, StationOperatorSlotsActivity.class)));
 
+        // View Appointments (active)
+        MaterialButton btnAppointments = findViewById(R.id.btnViewAppointments);
+        btnAppointments.setOnClickListener(v ->
+                startActivity(new Intent(this, AppointmentsActivity.class)));
 
+        // View Reservation History (completed + cancelled)
+        MaterialButton btnHistory = findViewById(R.id.btnViewHistory);
+        if (btnHistory != null) {
+            btnHistory.setOnClickListener(v ->
+                    startActivity(new Intent(this, ReservationHistoryActivity.class)));
+        }
     }
 
     private void launchScan() {
@@ -61,9 +74,11 @@ public class StationOperatorHomeActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_SCAN && resultCode == RESULT_OK && data != null) {
             String qr = data.getStringExtra("qr_text");
-            if (qr == null || qr.isEmpty()) {
-                Toast.makeText(this, "QR not recognized.", Toast.LENGTH_SHORT).show();
-                return;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                if (qr == null || qr.isEmpty()) {
+                    Toast.makeText(this, "QR not recognized.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
             Intent form = new Intent(this, StationOperatorUserFormActivity.class);
             form.putExtra("qr_payload", qr);
