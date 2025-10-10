@@ -3,6 +3,7 @@ package com.example.evynkchargingmobileapp.repo;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.evynkchargingmobileapp.R;
 import com.example.evynkchargingmobileapp.net.ApiClient;
 import com.example.evynkchargingmobileapp.util.StationOperatorPrefs;
 
@@ -23,15 +24,18 @@ public class StationOperatorReservationRepository {
 
     public StationOperatorReservationRepository(Context ctx) {
         this.ctx = ctx.getApplicationContext();
-        // TODO: set your base URL
-        this.api = new ApiClient("http://10.0.2.2:5000/");
+
+        // Read base URL from resources and ensure it ends with a slash
+        String raw = this.ctx.getString(R.string.base_url);
+        String base = ensureTrailingSlash(raw);
+
+        this.api = new ApiClient(base);
     }
 
-    /**
-     * POST /api/operator/reservations/verify
+    /** POST /api/operator/reservations/verify
      * - If QR is JSON: send it as-is.
-     * - If QR is plain text: wrap it into a best-guess DTO ("code": "..."), adjust if backend requires different fields.
-     * Returns the entire server JSON so the caller can render it.
+     * - If QR is plain text: wrap it into {"code": "..."} (adjust if backend differs).
+     * Returns the full server JSON so callers can render it.
      */
     public void verify(String qrPayload, Result<JSONObject> cb) {
         new Thread(() -> {
@@ -44,9 +48,9 @@ public class StationOperatorReservationRepository {
 
                 JSONObject body;
                 try {
-                    body = new JSONObject(qrPayload); // QR already JSON
+                    body = new JSONObject(qrPayload); // QR is already JSON
                 } catch (JSONException ignored) {
-                    // Fallback: backend must accept a "code" field (adjust if needed)
+                    // Fallback structure
                     body = new JSONObject();
                     body.put("code", qrPayload);
                 }
@@ -62,10 +66,7 @@ public class StationOperatorReservationRepository {
         }).start();
     }
 
-    /**
-     * PATCH /api/operator/reservations/{id}/complete
-     */
-
+    /** PATCH /api/operator/reservations/{id}/complete */
     public void complete(String bookingId, Result<JSONObject> cb) {
         new Thread(() -> {
             try {
@@ -76,7 +77,7 @@ public class StationOperatorReservationRepository {
                 }
 
                 String path = "api/operator/reservations/" + bookingId + "/complete";
-                JSONObject resp = api.patch(path, new JSONObject(), token); // This should now work
+                JSONObject resp = api.patch(path, new JSONObject(), token);
                 Log.d(TAG, "Complete response: " + resp);
                 cb.onSuccess(resp);
 
@@ -87,4 +88,9 @@ public class StationOperatorReservationRepository {
         }).start();
     }
 
+    // ---- helpers ----
+    private static String ensureTrailingSlash(String s) {
+        if (s == null || s.trim().isEmpty()) return "";
+        return s.endsWith("/") ? s : (s + "/");
+    }
 }

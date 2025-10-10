@@ -51,12 +51,16 @@ import java.util.TimeZone;
 public class OwnerReservationsActivity extends AppCompatActivity {
 
     private static final String TAG = "OwnerResvScreen";
-    private static final String API_BASE = "http://10.0.2.2:5000";
+
+    // Paths only — base URL comes from strings.xml
+    private static final String UPCOMING_PATH   = "/api/owner/reservations/upcoming";
+    private static final String DELETE_PATH_PREF = "/api/owner/reservations/";           // + {id}
+    private static final String QR_PATH_SUFFIX   = "/api/owner/reservations/%s/qr-image"; // String.format
 
     private RecyclerView recycler;
     private TextView emptyView;
     private ProgressBar progress;
-    private ReservationsAdapter adapter;   // <- now defined below in this file
+    private ReservationsAdapter adapter;
     private final Handler main = new Handler(Looper.getMainLooper());
 
     // Filters
@@ -67,17 +71,23 @@ public class OwnerReservationsActivity extends AppCompatActivity {
     // Full list -> client-side filter
     private final List<BookingItem> allItems = new ArrayList<>();
 
+    // Normalized base URL from resources (no trailing slash)
+    private String apiBase;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_owner_reservations);
+
+        // Base URL from resources
+        apiBase = stripTrailingSlash(getString(R.string.base_url));
 
         MaterialToolbar top = findViewById(R.id.topAppBar);
         if (top != null) {
             top.setTitle("My reservations");
             setSupportActionBar(top);
             if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            top.setNavigationOnClickListener(v -> onBackPressed());
+            top.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         }
 
         filterGroup = findViewById(R.id.filterGroup);
@@ -123,7 +133,7 @@ public class OwnerReservationsActivity extends AppCompatActivity {
     private void openDetails(BookingItem item) {
         Intent i = new Intent(this, ReservationDetailsActivity.class);
         i.putExtra("id", item.id);
-        i.putExtra("stationId", item.stationId); // pass for map lookup
+        i.putExtra("stationId", item.stationId);
         startActivity(i);
     }
 
@@ -136,7 +146,7 @@ public class OwnerReservationsActivity extends AppCompatActivity {
             return;
         }
 
-        final String url = API_BASE + "/api/owner/reservations/upcoming";
+        final String url = apiBase + UPCOMING_PATH;
         showState(false, true);
 
         new Thread(() -> {
@@ -204,47 +214,6 @@ public class OwnerReservationsActivity extends AppCompatActivity {
         recycler.setVisibility(filtered.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
-    private void showState(boolean empty, boolean loading) {
-        progress.setVisibility(loading ? View.VISIBLE : View.GONE);
-        recycler.setVisibility(!loading && !empty ? View.VISIBLE : View.GONE);
-        emptyView.setVisibility(!loading && empty ? View.VISIBLE : View.GONE);
-    }
-
-    private @Nullable String getToken() {
-        String fromIntent = getIntent().getStringExtra("token");
-        if (fromIntent != null && !fromIntent.trim().isEmpty()) return fromIntent;
-
-        String nic = Prefs.getCurrentNic(this);
-        if (nic != null && !nic.trim().isEmpty()) {
-            UserDao dao = new UserDao(getApplicationContext());
-            String t = dao.getAccessToken(nic);
-            if (t != null && !t.trim().isEmpty()) return t;
-        }
-        return getSharedPreferences("auth", MODE_PRIVATE).getString("token", null);
-    }
-
-    private List<BookingItem> parseList(String json) throws Exception {
-        JSONObject root = new JSONObject(json);
-        JSONArray data = root.optJSONArray("data");
-        List<BookingItem> list = new ArrayList<>();
-        if (data == null) return list;
-
-        for (int i = 0; i < data.length(); i++) {
-            JSONObject o = data.getJSONObject(i);
-            if (o.has("id") && !o.optString("id").isEmpty()) {
-                BookingItem b = new BookingItem();
-                b.id               = o.optString("id", "").trim();
-                b.stationId        = o.optString("stationId", "").trim();
-                b.stationName      = o.optString("stationName", "");
-                b.ownerNic         = o.optString("ownerNic", ""); // not shown in UI list
-                b.reservationAtUtc = o.optString("reservationAtUtc", "");
-                b.status           = o.optString("status", "");
-                list.add(b);
-            }
-        }
-        return list;
-    }
-
     private void confirmDelete(BookingItem item) {
         new AlertDialog.Builder(this)
                 .setTitle("Delete reservation?")
@@ -269,7 +238,7 @@ public class OwnerReservationsActivity extends AppCompatActivity {
         new Thread(() -> {
             HttpURLConnection conn = null;
             try {
-                URL url = new URL(API_BASE + "/api/owner/reservations/" + reservationId.trim());
+                URL url = new URL(apiBase + DELETE_PATH_PREF + reservationId.trim());
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("DELETE");
                 conn.setRequestProperty("Authorization", "Bearer " + token);
@@ -301,6 +270,8 @@ public class OwnerReservationsActivity extends AppCompatActivity {
                     progress.setVisibility(View.GONE);
                     Toast.makeText(this, "Delete error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                 });
+            } finally {
+                if (conn != null) conn.disconnect();
             }
         }).start();
     }
@@ -327,8 +298,8 @@ public class OwnerReservationsActivity extends AppCompatActivity {
         new Thread(() -> {
             HttpURLConnection conn = null;
             try {
-                URL url = new URL(API_BASE + "/api/owner/reservations/" + reservationId + "/qr-image");
-                conn = (HttpURLConnection) url.openConnection();
+                String qrUrl = apiBase + String.format(Locale.US, QR_PATH_SUFFIX, reservationId);
+                conn = (HttpURLConnection) new URL(qrUrl).openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Authorization", "Bearer " + token);
                 conn.setConnectTimeout(10000);
@@ -364,6 +335,47 @@ public class OwnerReservationsActivity extends AppCompatActivity {
                 if (conn != null) conn.disconnect();
             }
         }).start();
+    }
+
+    private void showState(boolean empty, boolean loading) {
+        progress.setVisibility(loading ? View.VISIBLE : View.GONE);
+        recycler.setVisibility(!loading && !empty ? View.VISIBLE : View.GONE);
+        emptyView.setVisibility(!loading && empty ? View.VISIBLE : View.GONE);
+    }
+
+    private @Nullable String getToken() {
+        String fromIntent = getIntent().getStringExtra("token");
+        if (fromIntent != null && !fromIntent.trim().isEmpty()) return fromIntent;
+
+        String nic = Prefs.getCurrentNic(this);
+        if (nic != null && !nic.trim().isEmpty()) {
+            UserDao dao = new UserDao(getApplicationContext());
+            String t = dao.getAccessToken(nic);
+            if (t != null && !t.trim().isEmpty()) return t;
+        }
+        return getSharedPreferences("auth", MODE_PRIVATE).getString("token", null);
+    }
+
+    private List<BookingItem> parseList(String json) throws Exception {
+        JSONObject root = new JSONObject(json);
+        JSONArray data = root.optJSONArray("data");
+        List<BookingItem> list = new ArrayList<>();
+        if (data == null) return list;
+
+        for (int i = 0; i < data.length(); i++) {
+            JSONObject o = data.getJSONObject(i);
+            if (o.has("id") && !o.optString("id").isEmpty()) {
+                BookingItem b = new BookingItem();
+                b.id               = o.optString("id", "").trim();
+                b.stationId        = o.optString("stationId", "").trim();
+                b.stationName      = o.optString("stationName", "");
+                b.ownerNic         = o.optString("ownerNic", "");
+                b.reservationAtUtc = o.optString("reservationAtUtc", "");
+                b.status           = o.optString("status", "");
+                list.add(b);
+            }
+        }
+        return list;
     }
 
     // ----- model + adapter -----
@@ -464,5 +476,11 @@ public class OwnerReservationsActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    // --- helpers ---
+    private static String stripTrailingSlash(String s) {
+        if (s == null) return "";
+        return s.endsWith("/") ? s.substring(0, s.length() - 1) : s;
     }
 }

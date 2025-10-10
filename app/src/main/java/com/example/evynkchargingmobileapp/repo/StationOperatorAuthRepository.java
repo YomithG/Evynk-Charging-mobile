@@ -2,6 +2,7 @@ package com.example.evynkchargingmobileapp.repo;
 
 import android.content.Context;
 
+import com.example.evynkchargingmobileapp.R;
 import com.example.evynkchargingmobileapp.data.model.StationOperatorUser;
 import com.example.evynkchargingmobileapp.net.ApiClient;
 
@@ -17,30 +18,36 @@ public class StationOperatorAuthRepository {
     private final ApiClient api;
 
     public StationOperatorAuthRepository(Context ctx) {
-        // Change base URL to your backend root, e.g. "http://10.0.2.2:5000/"
-        api = new ApiClient("http://10.0.2.2:5000/");
+        Context app = ctx.getApplicationContext();
+        String raw = app.getString(R.string.base_url);
+        this.api = new ApiClient(ensureTrailingSlash(raw));
     }
 
     public void loginStationOperator(String email, String password, Result<StationOperatorUser> cb) {
         new Thread(() -> {
             try {
-                JSONObject body = new JSONObject();
-                body.put("email", email);
-                body.put("password", password);
+                JSONObject body = new JSONObject()
+                        .put("email", email)
+                        .put("password", password);
 
+                // Adjust the path if your backend differs
                 JSONObject resp = api.post("api/Auth/login", body, null);
 
                 // Map JSON -> User
                 StationOperatorUser user = new StationOperatorUser();
-                user.id = resp.optString("id", resp.optString("_id", ""));
-                user.email = resp.optString("email", "");
-                user.role = resp.optString("role", "StationOperator");
-                user.name = resp.optString("name", "");
+                user.id        = resp.optString("id", resp.optString("_id", ""));
+                user.email     = resp.optString("email", "");
+                user.role      = resp.optString("role", "StationOperator");
+                user.name      = resp.optString("name", "");
                 user.createdAt = resp.optString("createdAt", "");
                 user.updatedAt = resp.optString("updatedAt", "");
 
-                // Optional token if your backend returns it
-                String token = resp.optString("token", null);
+                // Try common token field names
+                String token = firstNonEmpty(
+                        resp.optString("accessToken", null),
+                        resp.optString("token", null),
+                        resp.optString("jwt", null)
+                );
 
                 cb.onSuccess(user, token);
 
@@ -48,5 +55,19 @@ public class StationOperatorAuthRepository {
                 cb.onError(e.getMessage());
             }
         }).start();
+    }
+
+    // ---- helpers ----
+    private static String ensureTrailingSlash(String s) {
+        if (s == null || s.trim().isEmpty()) return "";
+        return s.endsWith("/") ? s : (s + "/");
+    }
+
+    private static String firstNonEmpty(String... vals) {
+        if (vals == null) return null;
+        for (String v : vals) {
+            if (v != null && !v.trim().isEmpty() && !"null".equalsIgnoreCase(v)) return v.trim();
+        }
+        return null;
     }
 }

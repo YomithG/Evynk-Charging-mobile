@@ -2,6 +2,7 @@ package com.example.evynkchargingmobileapp.repo;
 
 import android.content.Context;
 
+import com.example.evynkchargingmobileapp.R;
 import com.example.evynkchargingmobileapp.data.db.UserDao;
 import com.example.evynkchargingmobileapp.data.model.User;
 import com.example.evynkchargingmobileapp.net.ApiClient;
@@ -16,8 +17,7 @@ public class AuthRepository {
         void onError(String message);
     }
 
-    private static final String BASE_URL = "http://10.0.2.2:5000/";
-
+    // API paths (unchanged)
     private static final String PATH_LOGIN_OWNER     = "api/Auth/login-owner";
     private static final String PATH_REGISTER_OWNER  = "api/Auth/register-owner";
     private static final String PATH_ME              = "api/owner/me";
@@ -26,11 +26,17 @@ public class AuthRepository {
     private final Context appCtx;
     private final ApiClient api;
     private final UserDao userDao;
+    private final String baseUrl; // now comes from resources
 
     public AuthRepository(Context ctx) {
         this.appCtx = ctx.getApplicationContext();
-        this.api    = new ApiClient(BASE_URL);
-        this.userDao= new UserDao(appCtx);
+
+        // Read from strings.xml and normalize to ALWAYS end with a slash
+        String raw = appCtx.getString(R.string.base_url);
+        this.baseUrl = ensureTrailingSlash(raw);
+
+        this.api     = new ApiClient(baseUrl);
+        this.userDao = new UserDao(appCtx);
     }
 
     // -------- AUTH (already working in your project) --------
@@ -184,7 +190,7 @@ public class AuthRepository {
                 if (token == null) { cb.onError("Missing access token."); return; }
 
                 // Body is usually empty for this endpoint
-                JSONObject resp = api.put(PATH_DEACTIVATE_SELF, new JSONObject(), token);
+                api.put(PATH_DEACTIVATE_SELF, new JSONObject(), token);
 
                 // Mark local user inactive and log out
                 User u = userDao.getUser(nicKey);
@@ -221,5 +227,10 @@ public class AuthRepository {
         } catch (Exception ignore) {
             return null;
         }
+    }
+
+    private static String ensureTrailingSlash(String s) {
+        if (s == null || s.trim().isEmpty()) return "";
+        return s.endsWith("/") ? s : (s + "/");
     }
 }

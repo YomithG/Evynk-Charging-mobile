@@ -23,7 +23,6 @@ import com.example.evynkchargingmobileapp.R;
 import com.example.evynkchargingmobileapp.data.db.UserDao;
 import com.example.evynkchargingmobileapp.util.Prefs;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -51,10 +50,12 @@ public class FindStationActivity extends AppCompatActivity
         implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private static final String TAG = "FindStationActivity";
-    private static final String API_BASE = "http://10.0.2.2:5000";
 
     private static final int REQ_LOCATION = 1001;
     private static final double NEARBY_RADIUS_KM = 12.0;
+
+    // Base URL from strings.xml (normalized, without trailing slash)
+    private String apiBase;
 
     private GoogleMap googleMap;
     private final Handler main = new Handler(Looper.getMainLooper());
@@ -69,11 +70,14 @@ public class FindStationActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_station);
 
+        // load base url from resources
+        apiBase = stripTrailingSlash(getString(R.string.base_url));
+
         MaterialToolbar top = findViewById(R.id.topAppBar);
         if (top != null) {
             top.setTitle("Find Station");
             setSupportActionBar(top);
-            top.setNavigationOnClickListener(v -> onBackPressed());
+            top.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         }
         statusText = findViewById(R.id.statusText);
 
@@ -152,7 +156,7 @@ public class FindStationActivity extends AppCompatActivity
         }
     }
 
-    private void setMyLatLng(Location loc) {
+    private void setMyLatLng(android.location.Location loc) {
         myLatLng = new LatLng(loc.getLatitude(), loc.getLongitude());
 
         // Add/refresh our custom marker too (so user sees something even if dot not rendered yet)
@@ -183,7 +187,7 @@ public class FindStationActivity extends AppCompatActivity
         new Thread(() -> {
             HttpURLConnection c = null;
             try {
-                URL url = new URL(API_BASE + "/api/public/stations");
+                URL url = new URL(apiBase + "/api/public/stations");
                 c = (HttpURLConnection) url.openConnection();
                 c.setRequestProperty("Accept", "application/json");
 
@@ -401,5 +405,10 @@ public class FindStationActivity extends AppCompatActivity
             Log.e(TAG, "coerceToStationsArray parse error: " + e.getMessage());
             return null;
         }
+    }
+
+    private static String stripTrailingSlash(String s) {
+        if (s == null) return "";
+        return s.endsWith("/") ? s.substring(0, s.length() - 1) : s;
     }
 }

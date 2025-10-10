@@ -29,7 +29,10 @@ import java.util.*;
 public class EditReservationActivity extends AppCompatActivity {
 
     private static final String TAG = "EditReservation";
-    private static final String API_BASE = "http://10.0.2.2:5000";
+
+    // Paths only — base comes from strings.xml
+    private static final String LIST_STATIONS_PATH   = "/api/public/stations";
+    private static final String UPDATE_RES_PATH_PREF = "/api/owner/reservations/"; // + {id}
 
     // UI
     private EditText edtStationDisplay;
@@ -43,16 +46,22 @@ public class EditReservationActivity extends AppCompatActivity {
     private String selectedStationLabel;  // pretty label
     private final Calendar cal = Calendar.getInstance();
 
+    // Normalized base URL from resources (no trailing slash)
+    private String apiBase;
+
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_reservation);
+
+        // Base URL from resources
+        apiBase = stripTrailingSlash(getString(R.string.base_url));
 
         MaterialToolbar top = findViewById(R.id.topAppBar);
         if (top != null) {
             top.setTitle("Edit reservation");
             setSupportActionBar(top);
             if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            top.setNavigationOnClickListener(v -> onBackPressed());
+            top.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         }
 
         // Bind
@@ -70,7 +79,6 @@ public class EditReservationActivity extends AppCompatActivity {
         reservationId = getIntent().getStringExtra("id");
         selectedStationId = getIntent().getStringExtra("stationId");
         selectedStationLabel = getIntent().getStringExtra("stationName"); // nice to show
-
         String at = getIntent().getStringExtra("reservationAtUtc");
         parseInitialTime(at);
 
@@ -83,13 +91,20 @@ public class EditReservationActivity extends AppCompatActivity {
         // Events
         btnPickStation.setOnClickListener(v -> fetchAndPickStation());
         edtStationDisplay.setOnClickListener(v -> fetchAndPickStation());
-        btnPickDate.setOnClickListener(v -> new DatePickerDialog(this,
-                (view, y, m, d) -> { cal.set(y, m, d); refreshDateTimeLabels(); },
-                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show());
 
-        btnPickTime.setOnClickListener(v -> new TimePickerDialog(this,
-                (view, h, min) -> { cal.set(Calendar.HOUR_OF_DAY, h); cal.set(Calendar.MINUTE, min); cal.set(Calendar.SECOND, 0); refreshDateTimeLabels(); },
-                cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show());
+        btnPickDate.setOnClickListener(v ->
+                new DatePickerDialog(this,
+                        (view, y, m, d) -> { cal.set(y, m, d); refreshDateTimeLabels(); },
+                        cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
+                ).show()
+        );
+
+        btnPickTime.setOnClickListener(v ->
+                new TimePickerDialog(this,
+                        (view, h, min) -> { cal.set(Calendar.HOUR_OF_DAY, h); cal.set(Calendar.MINUTE, min); cal.set(Calendar.SECOND, 0); refreshDateTimeLabels(); },
+                        cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true
+                ).show()
+        );
 
         btnSave.setOnClickListener(v -> doUpdate());
         btnCancel.setOnClickListener(v -> finish());
@@ -123,22 +138,19 @@ public class EditReservationActivity extends AppCompatActivity {
         new Thread(() -> {
             HttpURLConnection conn = null;
             try {
-                URL url = new URL(API_BASE + "/api/public/stations");
+                URL url = new URL(apiBase + LIST_STATIONS_PATH);
                 conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(10000);
                 conn.setRequestProperty("Authorization", "Bearer " + token);
                 conn.setRequestProperty("Accept", "application/json");
+
                 int code = conn.getResponseCode();
+                String resp = readAll(code >= 200 && code < 300 ? conn.getInputStream() : conn.getErrorStream());
+                if (code < 200 || code >= 300) throw new IOException(resp);
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        code >= 200 && code < 300 ? conn.getInputStream() : conn.getErrorStream()
-                ));
-                StringBuilder sb = new StringBuilder(); String line;
-                while ((line = br.readLine()) != null) sb.append(line);
-                br.close();
-
-                if (code < 200 || code >= 300) throw new IOException(sb.toString());
-
-                JSONObject root = new JSONObject(sb.toString());
+                JSONObject root = new JSONObject(resp);
                 JSONArray data = root.optJSONArray("data");
 
                 final List<String> labels = new ArrayList<>();
@@ -147,7 +159,7 @@ public class EditReservationActivity extends AppCompatActivity {
                     for (int i = 0; i < data.length(); i++) {
                         JSONObject o = data.optJSONObject(i);
                         if (o == null) continue;
-                        String id = o.optString("id", "");
+                        String id = o.optString("id", "").trim();
                         if (TextUtils.isEmpty(id)) continue;
 
                         String loc = o.optString("location", "").trim();
@@ -200,10 +212,12 @@ public class EditReservationActivity extends AppCompatActivity {
         new Thread(() -> {
             HttpURLConnection conn = null;
             try {
-                URL url = new URL(API_BASE + "/api/owner/reservations/" + reservationId.trim());
+                URL url = new URL(apiBase + UPDATE_RES_PATH_PREF + reservationId.trim());
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("PUT");
                 conn.setDoOutput(true);
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(10000);
                 conn.setRequestProperty("Authorization", "Bearer " + token);
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
                 conn.setRequestProperty("Accept", "application/json");
@@ -217,14 +231,9 @@ public class EditReservationActivity extends AppCompatActivity {
                 }
 
                 int code = conn.getResponseCode();
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        code >= 200 && code < 300 ? conn.getInputStream() : conn.getErrorStream()
-                ));
-                StringBuilder sb = new StringBuilder(); String line;
-                while ((line = br.readLine()) != null) sb.append(line);
-                br.close();
+                String resp = readAll(code >= 200 && code < 300 ? conn.getInputStream() : conn.getErrorStream());
 
-                Log.d(TAG, "PUT " + code + " " + sb);
+                Log.d(TAG, "PUT " + code + " " + resp);
 
                 runOnUiThread(() -> {
                     setLoading(false);
@@ -232,8 +241,8 @@ public class EditReservationActivity extends AppCompatActivity {
                         toast("Reservation updated");
                         finish(); // return to list; onResume() will refresh
                     } else {
-                        String msg = tryMsg(sb.toString());
-                        toast("Update failed (" + code + "): " + (msg != null ? msg : sb));
+                        String msg = tryMsg(resp);
+                        toast("Update failed (" + code + "): " + (msg != null ? msg : safeSlice(resp)));
                     }
                 });
             } catch (Exception ex) {
@@ -268,7 +277,27 @@ public class EditReservationActivity extends AppCompatActivity {
         return getSharedPreferences("auth", MODE_PRIVATE).getString("token", null);
     }
 
+    private static String readAll(InputStream is) throws IOException {
+        if (is == null) return "";
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) sb.append(line);
+        br.close();
+        return sb.toString();
+    }
+
+    private static String safeSlice(String s) {
+        if (s == null) return "";
+        return s.length() > 300 ? s.substring(0, 300) + "..." : s;
+    }
+
     private @Nullable String tryMsg(String json) {
         try { return new JSONObject(json).optString("message", null); } catch (Exception ignore) { return null; }
+    }
+
+    private static String stripTrailingSlash(String s) {
+        if (s == null) return "";
+        return s.endsWith("/") ? s.substring(0, s.length() - 1) : s;
     }
 }

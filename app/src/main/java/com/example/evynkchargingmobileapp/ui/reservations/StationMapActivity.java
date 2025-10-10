@@ -40,7 +40,9 @@ import java.util.Locale;
 public class StationMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = "StationMap";
-    private static final String API_BASE = "http://10.0.2.2:5000";
+
+    // Base URL (normalized, no trailing slash) from strings.xml
+    private String apiBase;
 
     private GoogleMap map;
     private FloatingActionButton fabOpenExternal;
@@ -59,12 +61,14 @@ public class StationMapActivity extends AppCompatActivity implements OnMapReadyC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station_map);
 
+        apiBase = stripTrailingSlash(getString(R.string.base_url));
+
         MaterialToolbar top = findViewById(R.id.topAppBar);
         if (top != null) {
             top.setTitle("Charging stations map");
             setSupportActionBar(top);
             if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            top.setNavigationOnClickListener(v -> onBackPressed());
+            top.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         }
 
         fabOpenExternal = findViewById(R.id.fabOpenExternal);
@@ -93,11 +97,11 @@ public class StationMapActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     private void fetchStationsAndShow() {
-        final String token = resolveToken(); // optional for /api/public/stations, but OK if your API accepts it
+        final String token = resolveToken(); // optional for /api/public/stations
         new Thread(() -> {
             HttpURLConnection conn = null;
             try {
-                URL url = new URL(API_BASE + "/api/public/stations");
+                URL url = new URL(apiBase + "/api/public/stations");
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 if (token != null) conn.setRequestProperty("Authorization", "Bearer " + token);
@@ -139,22 +143,25 @@ public class StationMapActivity extends AppCompatActivity implements OnMapReadyC
 
                 MarkerData md = new MarkerData();
                 md.stationId = o.optString("id", "");
-                // Your backend fields (adjust if needed)
+
                 String location = o.optString("location", "Station");
                 String type = o.optString("type", "");
                 md.title = type.isEmpty() ? location : location + " • " + type;
 
-                // If your API already has coordinates, use them:
-                // md.lat = o.has("lat") ? o.optDouble("lat") : null;
-                // md.lng = o.has("lng") ? o.optDouble("lng") : null;
-
-                // We’ll store the textual address either way
-                md.address = location;
+                // Prefer coordinates if present from API
+                if (o.has("lat") && o.has("lng")) {
+                    try {
+                        md.lat = o.isNull("lat") ? null : o.getDouble("lat");
+                        md.lng = o.isNull("lng") ? null : o.getDouble("lng");
+                    } catch (Exception ignore) {}
+                } else {
+                    // store address text to geocode
+                    md.address = location;
+                }
 
                 markers.add(md);
             }
 
-            // geocode any items missing lat/lng
             geocodeMissingAndShow();
         } catch (Exception e) {
             Log.e(TAG, "parse error", e);
@@ -167,8 +174,8 @@ public class StationMapActivity extends AppCompatActivity implements OnMapReadyC
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
             for (MarkerData m : markers) {
                 if (m.lat != null && m.lng != null) continue;
+                if (m.address == null || m.address.trim().isEmpty()) continue;
                 try {
-                    // Try geocoding the address string
                     List<Address> res = geocoder.getFromLocationName(m.address, 1);
                     if (res != null && !res.isEmpty()) {
                         Address a = res.get(0);
@@ -189,13 +196,13 @@ public class StationMapActivity extends AppCompatActivity implements OnMapReadyC
         int count = 0;
 
         for (MarkerData m : markers) {
-            if (m.lat == null || m.lng == null) continue; // skip ones that couldn’t be geocoded
+            if (m.lat == null || m.lng == null) continue;
 
             LatLng pos = new LatLng(m.lat, m.lng);
             map.addMarker(new MarkerOptions()
                     .position(pos)
                     .title(m.title)
-                    .snippet(m.address)
+                    .snippet(m.address != null ? m.address : m.title)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
             bounds.include(pos);
             count++;
@@ -215,7 +222,6 @@ public class StationMapActivity extends AppCompatActivity implements OnMapReadyC
             Toast.makeText(this, "No mappable stations (geocoding failed).", Toast.LENGTH_LONG).show();
         }
 
-        // Click -> open Google Maps with this address
         map.setOnInfoWindowClickListener(marker -> {
             String query = Uri.encode(marker.getSnippet() != null ? marker.getSnippet() : marker.getTitle());
             Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + query);
@@ -232,5 +238,10 @@ public class StationMapActivity extends AppCompatActivity implements OnMapReadyC
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         intent.setPackage("com.google.android.apps.maps");
         startActivity(intent);
+    }
+
+    private static String stripTrailingSlash(String s) {
+        if (s == null) return "";
+        return s.endsWith("/") ? s.substring(0, s.length() - 1) : s;
     }
 }

@@ -1,0 +1,4 @@
+<resources>
+    <!-- Fallback; overridden by debug/release below -->
+    <string name="base_url">http://10.0.2.2:5000/</string>
+</resources>

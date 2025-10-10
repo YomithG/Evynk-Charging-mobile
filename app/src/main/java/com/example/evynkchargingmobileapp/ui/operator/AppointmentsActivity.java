@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.evynkchargingmobileapp.R;
+import com.example.evynkchargingmobileapp.data.model.Appointment;
 import com.example.evynkchargingmobileapp.net.ApiClient;
 import com.example.evynkchargingmobileapp.util.StationOperatorPrefs;
-import com.example.evynkchargingmobileapp.data.model.Appointment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,7 +29,7 @@ public class AppointmentsActivity extends AppCompatActivity {
     private final List<Appointment> appointmentList = new ArrayList<>();
     private AppointmentsAdapter appointmentsAdapter;
     private ApiClient api;
-    private static final String BASE = "http://10.0.2.2:5000/";
+
     private String operatorToken;
 
     private static final int STATUS_COMPLETED = 3;
@@ -40,7 +40,9 @@ public class AppointmentsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_appointments);
 
-        api = new ApiClient(BASE);
+        String baseUrl = getString(R.string.base_url);
+        api = new ApiClient(baseUrl);
+
         operatorToken = StationOperatorPrefs.getToken(this);
 
         tvActiveBookingsCount = findViewById(R.id.tvActiveBookingsCount);
@@ -103,7 +105,9 @@ public class AppointmentsActivity extends AppCompatActivity {
                 });
 
             } catch (Exception e) {
-                runOnUiThread(() -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show()
+                );
             }
         }).start();
     }
@@ -119,7 +123,9 @@ public class AppointmentsActivity extends AppCompatActivity {
                     tvActiveBookingsCount.setText("Active Appointments: " + appointmentList.size());
                 });
             } catch (Exception e) {
-                runOnUiThread(() -> Toast.makeText(this, "Action failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Action failed: " + e.getMessage(), Toast.LENGTH_LONG).show()
+                );
             }
         }).start();
     }

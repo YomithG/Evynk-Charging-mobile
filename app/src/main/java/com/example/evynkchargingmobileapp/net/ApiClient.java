@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 public class ApiClient {
-    private final String baseUrl; // e.g. "http://10.0.2.2:5000/"
+    private final String baseUrl;
 
     public ApiClient(String baseUrl) {
         if (baseUrl == null) baseUrl = "";

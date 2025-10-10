@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,11 +40,15 @@ import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.Date;
 
 public class BookSlotActivity extends AppCompatActivity {
 
     private static final String TAG = "BookSlotActivity";
-    private static final String API_BASE = "http://10.0.2.2:5000";
+
+    // Paths only — base comes from strings.xml
+    private static final String CREATE_RESERVATION_PATH = "/api/owner/reservations";
+    private static final String LIST_STATIONS_PATH      = "/api/public/stations";
 
     // UI
     private EditText edtStationDisplay;  // read-only, shows "Location • AC/DC"
@@ -59,6 +62,7 @@ public class BookSlotActivity extends AppCompatActivity {
     // State
     private String selectedStationId = null;     // used for submission only
     private String selectedStationLabel = null;  // UI text only
+    private String apiBase;                      // normalized base URL from strings.xml
 
     private final Calendar localCal = Calendar.getInstance();
     private final Handler main = new Handler(Looper.getMainLooper());
@@ -75,8 +79,11 @@ public class BookSlotActivity extends AppCompatActivity {
             top.setTitle("Book reservation");
             setSupportActionBar(top);
             if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            top.setNavigationOnClickListener(v -> onBackPressed());
+            top.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         }
+
+        // Base URL from resources (values/urls.xml) and normalize (remove trailing '/')
+        apiBase = stripTrailingSlash(getString(R.string.base_url));
 
         // Bind
         edtStationDisplay = findViewById(R.id.edtStationDisplay);
@@ -201,7 +208,7 @@ public class BookSlotActivity extends AppCompatActivity {
         new Thread(() -> {
             HttpURLConnection conn = null;
             try {
-                URL url = new URL(API_BASE + "/api/owner/reservations");
+                URL url = new URL(apiBase + CREATE_RESERVATION_PATH);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setConnectTimeout(10000);
@@ -224,9 +231,9 @@ public class BookSlotActivity extends AppCompatActivity {
                 int code = conn.getResponseCode();
                 String resp = readAll(code >= 200 && code < 300 ? conn.getInputStream() : conn.getErrorStream());
 
-                Log.d(TAG, "POST /api/owner/reservations -> " + code + " | " + resp);
+                Log.d(TAG, "POST " + CREATE_RESERVATION_PATH + " -> " + code + " | " + resp);
 
-                main.post(() -> {
+                runOnUiThread(() -> {
                     setLoading(false);
                     if (code >= 200 && code < 300) {
                         Toast.makeText(this, "Reservation booked ✅", Toast.LENGTH_SHORT).show();
@@ -238,7 +245,7 @@ public class BookSlotActivity extends AppCompatActivity {
                 });
             } catch (Exception ex) {
                 Log.e(TAG, "Network error", ex);
-                main.post(() -> {
+                runOnUiThread(() -> {
                     setLoading(false);
                     Toast.makeText(this, "Network error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                 });
@@ -265,7 +272,7 @@ public class BookSlotActivity extends AppCompatActivity {
         new Thread(() -> {
             HttpURLConnection conn = null;
             try {
-                URL url = new URL(API_BASE + "/api/public/stations");
+                URL url = new URL(apiBase + LIST_STATIONS_PATH);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Authorization", "Bearer " + token);
@@ -308,7 +315,7 @@ public class BookSlotActivity extends AppCompatActivity {
                     }
                 }
 
-                main.post(() -> {
+                runOnUiThread(() -> {
                     setLoading(false);
 
                     if (ids.isEmpty()) {
@@ -332,7 +339,7 @@ public class BookSlotActivity extends AppCompatActivity {
 
             } catch (Exception ex) {
                 Log.e(TAG, "fetch stations error", ex);
-                main.post(() -> {
+                runOnUiThread(() -> {
                     setLoading(false);
                     Toast.makeText(this, "Failed to load stations: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                 });
@@ -390,5 +397,10 @@ public class BookSlotActivity extends AppCompatActivity {
             if (!TextUtils.isEmpty(m)) return m;
         } catch (Exception ignored) {}
         return null;
+    }
+
+    private static String stripTrailingSlash(String s) {
+        if (s == null) return "";
+        return s.endsWith("/") ? s.substring(0, s.length() - 1) : s;
     }
 }

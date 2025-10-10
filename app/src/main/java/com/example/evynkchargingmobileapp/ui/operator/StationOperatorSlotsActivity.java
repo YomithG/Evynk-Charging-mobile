@@ -1,20 +1,21 @@
 package com.example.evynkchargingmobileapp.ui.operator;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputType;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.AlertDialog;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.evynkchargingmobileapp.R;
 import com.example.evynkchargingmobileapp.net.ApiClient;
@@ -28,11 +29,9 @@ public class StationOperatorSlotsActivity extends AppCompatActivity {
     private final Handler main = new Handler(Looper.getMainLooper());
     private SwipeRefreshLayout swipe;
     private TextView tvLocation, tvType, tvAvailableSlots;
-    private Button btnUpdateSlots;
-    private ImageView ivEditSlots; // Edit icon
-    private String stationId;  // Store the station ID
+    private ImageView ivEditSlots;
 
-    private static final String BASE = "http://10.0.2.2:5000/"; // Ensure this is correct for emulator
+    private String stationId;   // server id for this station
     private ApiClient api;
 
     @Override
@@ -40,19 +39,20 @@ public class StationOperatorSlotsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station_operator_slots);
 
-        api = new ApiClient(BASE);
+        // ✅ Base URL from resources (values/urls.xml)
+        String baseUrl = getString(R.string.base_url);
+        api = new ApiClient(baseUrl);
 
         swipe = findViewById(R.id.swipe);
         tvLocation = findViewById(R.id.tvLocation);
         tvType = findViewById(R.id.tvType);
         tvAvailableSlots = findViewById(R.id.tvAvailableSlots);
-        ivEditSlots = findViewById(R.id.ivEditSlots); // Edit icon
+        ivEditSlots = findViewById(R.id.ivEditSlots);
 
         swipe.setOnRefreshListener(this::loadStation);
         swipe.setRefreshing(true);
         loadStation();
 
-        // Handle the update button click
         ivEditSlots.setOnClickListener(v -> showEditDialog());
     }
 
@@ -60,7 +60,6 @@ public class StationOperatorSlotsActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 final String token = StationOperatorPrefs.getToken(this);
-
                 if (token == null || token.isEmpty()) {
                     main.post(() -> {
                         swipe.setRefreshing(false);
@@ -69,15 +68,20 @@ public class StationOperatorSlotsActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Fetch the station data
+                // GET /api/station-data → expect an array; take the first station
                 JSONArray arr = api.getArray("api/station-data", token);
-                JSONObject first = arr.length() > 0 ? arr.getJSONObject(0) : null;
+                JSONObject first = (arr != null && arr.length() > 0) ? arr.getJSONObject(0) : null;
                 if (first == null) throw new IllegalStateException("No station data");
 
-                stationId = first.optString("id", "");  // Retrieve and store the station ID
+                // Some APIs send "_id", others "id" — handle both safely
+                stationId = first.optString("_id", first.optString("id", ""));
+
                 final String location = first.optString("location", "—");
                 final String type = first.optString("type", "—");
-                final int slots = first.optInt("availableSlots", 0);
+                // prefer "availableSlots"; fallback to "slots" if your API uses that
+                final int slots = first.has("availableSlots")
+                        ? first.optInt("availableSlots", 0)
+                        : first.optInt("slots", 0);
 
                 main.post(() -> {
                     tvLocation.setText("Location: " + location);
@@ -96,40 +100,40 @@ public class StationOperatorSlotsActivity extends AppCompatActivity {
     }
 
     private void showEditDialog() {
-        // Create a dialog to edit the available slots
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Edit Available Slots");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle("Edit Available Slots");
 
-        // Create an EditText for input
         final EditText input = new EditText(this);
-        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
         input.setText(tvAvailableSlots.getText().toString());
         builder.setView(input);
 
-        // Add buttons to the dialog
         builder.setPositiveButton("OK", (dialog, which) -> {
-            // Get the new slot value and update the available slots
-            int newAvailableSlots = Integer.parseInt(input.getText().toString());
-            updateAvailableSlots(newAvailableSlots);
+            String raw = input.getText() != null ? input.getText().toString().trim() : "";
+            if (raw.isEmpty()) {
+                Toast.makeText(this, "Please enter a number.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                int newAvailableSlots = Integer.parseInt(raw);
+                if (newAvailableSlots < 0) {
+                    Toast.makeText(this, "Value cannot be negative.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                updateAvailableSlots(newAvailableSlots);
+            } catch (NumberFormatException nfe) {
+                Toast.makeText(this, "Invalid number.", Toast.LENGTH_SHORT).show();
+            }
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-        // Show the dialog
         builder.show();
     }
 
     private void updateAvailableSlots(int newAvailableSlots) {
-        // Prepare the request payload to update the available slots
-        JSONObject payload = new JSONObject();
         try {
-            payload.put("availableSlots", newAvailableSlots);
+            JSONObject payload = new JSONObject().put("availableSlots", newAvailableSlots);
 
-            // Log the full URL and stationId before making the request
-            String url = BASE + "api/station-data/" + stationId + "/slots";  // Full URL
-            Log.d("StationOperator", "Calling URL: " + url);
-
-            // Make the API request to update the slots using PUT
             new Thread(() -> {
                 try {
                     final String token = StationOperatorPrefs.getToken(this);
@@ -137,20 +141,25 @@ public class StationOperatorSlotsActivity extends AppCompatActivity {
                         main.post(() -> Toast.makeText(this, "Missing operator token. Please log in again.", Toast.LENGTH_SHORT).show());
                         return;
                     }
+                    if (stationId == null || stationId.isEmpty()) {
+                        main.post(() -> Toast.makeText(this, "Station ID missing. Refresh and try again.", Toast.LENGTH_SHORT).show());
+                        return;
+                    }
 
+                    // PUT /api/station-data/{stationId}/slots
                     String path = "api/station-data/" + stationId + "/slots";
-                    JSONObject response = api.put(path, payload, token);  // PUT method
+                    JSONObject response = api.put(path, payload, token);
 
-                    // Log the response for debugging
-                    Log.d("StationOperator", "Response: " + response.toString());
+                    Log.d("StationOperator", "PUT " + path + " → " + response);
 
-                    // Handle the response
                     main.post(() -> {
-                        if (response.has("message")) {
+                        if (response != null && response.has("message")) {
                             Toast.makeText(this, response.optString("message"), Toast.LENGTH_SHORT).show();
-                            // Update the UI with new slot count
-                            tvAvailableSlots.setText(String.valueOf(newAvailableSlots));
+                        } else {
+                            Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
                         }
+                        // Update UI count after success
+                        tvAvailableSlots.setText(String.valueOf(newAvailableSlots));
                     });
 
                 } catch (Exception e) {
@@ -159,7 +168,6 @@ public class StationOperatorSlotsActivity extends AppCompatActivity {
             }).start();
 
         } catch (Exception e) {
-            e.printStackTrace();
             Toast.makeText(this, "Failed to prepare the request: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }

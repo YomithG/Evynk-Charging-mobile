@@ -37,9 +37,8 @@ import java.util.TimeZone;
 public class BookingHistoryActivity extends AppCompatActivity {
 
     private static final String TAG = "BookingHistory";
-    private static final String API_BASE = "http://10.0.2.2:5000";
 
-    // If your backend route is different, change only this:
+    // Path only — base comes from strings.xml
     private static final String HISTORY_PATH = "/api/owner/reservations/upcoming";
 
     private RecyclerView recycler;
@@ -54,7 +53,7 @@ public class BookingHistoryActivity extends AppCompatActivity {
         MaterialToolbar top = findViewById(R.id.topAppBar);
         setSupportActionBar(top);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        top.setNavigationOnClickListener(v -> onBackPressed());
+        top.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         recycler = findViewById(R.id.recyclerHistory);
         emptyView = findViewById(R.id.emptyView);
@@ -80,11 +79,15 @@ public class BookingHistoryActivity extends AppCompatActivity {
             return;
         }
 
+        // Base URL from resources (values/urls.xml)
+        final String baseFromRes = getString(R.string.base_url);
+        final String API_BASE = stripTrailingSlash(baseFromRes); // normalize
+
         showState(false, true);
         new Thread(() -> {
             HttpURLConnection conn = null;
             try {
-                URL url = new URL(API_BASE + HISTORY_PATH);
+                URL url = new URL(API_BASE + HISTORY_PATH); // safe join because HISTORY_PATH starts with '/'
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Authorization", "Bearer " + token);
@@ -126,6 +129,11 @@ public class BookingHistoryActivity extends AppCompatActivity {
                 if (conn != null) conn.disconnect();
             }
         }).start();
+    }
+
+    private static String stripTrailingSlash(String s) {
+        if (s == null) return "";
+        return s.endsWith("/") ? s.substring(0, s.length() - 1) : s;
     }
 
     private void showState(boolean empty, boolean loading) {

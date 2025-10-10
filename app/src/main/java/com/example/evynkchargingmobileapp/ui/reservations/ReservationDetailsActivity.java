@@ -1,5 +1,3 @@
-// ReservationDetailsActivity.java (drop-in)
-
 package com.example.evynkchargingmobileapp.ui.reservations;
 
 import android.content.ContentValues;
@@ -55,11 +53,14 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.Date;
 
 public class ReservationDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = "ReservationDetails";
-    private static final String API_BASE = "http://10.0.2.2:5000";
+
+    // Base URL (normalized, no trailing slash) read from strings.xml
+    private String apiBase;
 
     private TextView txtTitle, txtStatus, txtWhen, txtStation;
     private View qrCard;
@@ -87,12 +88,15 @@ public class ReservationDetailsActivity extends AppCompatActivity implements OnM
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reservation_details);
 
+        // Load and normalize base URL from resources
+        apiBase = stripTrailingSlash(getString(R.string.base_url));
+
         MaterialToolbar top = findViewById(R.id.topAppBar);
         if (top != null) {
             top.setTitle("Reservation");
             setSupportActionBar(top);
             if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            top.setNavigationOnClickListener(v -> onBackPressed());
+            top.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         }
 
         txtTitle   = findViewById(R.id.txtTitle);
@@ -145,7 +149,7 @@ public class ReservationDetailsActivity extends AppCompatActivity implements OnM
         new Thread(() -> {
             HttpURLConnection c = null;
             try {
-                URL url = new URL(API_BASE + "/api/owner/reservations/" + reservationId);
+                URL url = new URL(apiBase + "/api/owner/reservations/" + reservationId);
                 c = (HttpURLConnection) url.openConnection();
                 c.setRequestProperty("Authorization", "Bearer " + token);
                 c.setRequestProperty("Accept", "application/json");
@@ -243,9 +247,8 @@ public class ReservationDetailsActivity extends AppCompatActivity implements OnM
         new Thread(() -> {
             HttpURLConnection c = null;
             try {
-                URL url = new URL(API_BASE + "/api/public/stations/" + stId);
+                URL url = new URL(apiBase + "/api/public/stations/" + stId);
                 c = (HttpURLConnection) url.openConnection();
-                // 🔑 IMPORTANT: send token if we have one (endpoint may require it)
                 if (!isEmpty(token)) c.setRequestProperty("Authorization", "Bearer " + token);
                 c.setRequestProperty("Accept", "application/json");
                 c.setConnectTimeout(10000);
@@ -357,7 +360,7 @@ public class ReservationDetailsActivity extends AppCompatActivity implements OnM
         new Thread(() -> {
             HttpURLConnection c = null;
             try {
-                URL url = new URL(API_BASE + "/api/owner/reservations/" + reservationId + "/qr-image");
+                URL url = new URL(apiBase + "/api/owner/reservations/" + reservationId + "/qr-image");
                 c = (HttpURLConnection) url.openConnection();
                 c.setRequestProperty("Authorization", "Bearer " + token);
                 c.setConnectTimeout(10000);
@@ -521,5 +524,10 @@ public class ReservationDetailsActivity extends AppCompatActivity implements OnM
             String s = c.optString(innerKey, null);
             return (!isEmpty(s)) ? s.trim() : null;
         } catch (Exception e) { return null; }
+    }
+
+    private static String stripTrailingSlash(String s) {
+        if (s == null) return "";
+        return s.endsWith("/") ? s.substring(0, s.length() - 1) : s;
     }
 }

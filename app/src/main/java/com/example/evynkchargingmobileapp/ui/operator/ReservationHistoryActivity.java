@@ -26,7 +26,6 @@ public class ReservationHistoryActivity extends AppCompatActivity {
     private final List<Appointment> items = new ArrayList<>();
     private ReservationHistoryAdapter adapter;
 
-    private static final String BASE = "http://10.0.2.2:5000/";
     private ApiClient api;
 
     @Override
@@ -34,7 +33,9 @@ public class ReservationHistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reservation_history);
 
-        api = new ApiClient(BASE);
+        // Base URL from resources (values/urls.xml)
+        String baseUrl = getString(R.string.base_url);
+        api = new ApiClient(baseUrl);
 
         tvHistoryCount = findViewById(R.id.tvHistoryCount);
         rvHistory = findViewById(R.id.rvHistory);
@@ -72,7 +73,6 @@ public class ReservationHistoryActivity extends AppCompatActivity {
                                 b.optString("reservationAtUtc", ""),
                                 b.optString("status", "")
                         ));
-                        // if you also want to show stationId on card, you can extend Appointment or use a new model.
                     }
                 }
 
