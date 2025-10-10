@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.evynkchargingmobileapp.R;
 import com.example.evynkchargingmobileapp.data.model.User;
 import com.example.evynkchargingmobileapp.repo.AuthRepository;
-import com.example.evynkchargingmobileapp.ui.dashboard.DashboardActivity;
 import com.example.evynkchargingmobileapp.ui.home.HomeActivity;
 import com.example.evynkchargingmobileapp.util.Prefs;
 
@@ -38,9 +37,9 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        btnLogin = findViewById(R.id.btnLogin);
+        etEmail      = findViewById(R.id.etEmail);
+        etPassword   = findViewById(R.id.etPassword);
+        btnLogin     = findViewById(R.id.btnLogin);
         tvToRegister = findViewById(R.id.tvToRegister);
 
         repo = new AuthRepository(this);
@@ -48,6 +47,10 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(v -> onLogin());
         tvToRegister.setOnClickListener(v ->
                 startActivity(new Intent(this, RegisterActivity.class)));
+
+        // NEW: open Station Operator login
+        findViewById(R.id.tvOperatorLogin).setOnClickListener(v ->
+                startActivity(new Intent(this, StationOperatorLoginActivity.class)));
     }
 
     private void onLogin() {

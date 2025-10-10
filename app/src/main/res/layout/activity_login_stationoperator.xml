@@ -22,25 +22,14 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Title block (matches Register) -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign in"
+                android:text="Station operator sign in"
                 android:textColor="#E6EAF0"
                 android:textStyle="bold"
                 android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/tvToRegister"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Don't have an account? Create one"
-                android:textColor="#A5ADBA"
-                android:textSize="13sp"
-                android:layout_marginTop="2dp" />
-
-            <!-- Email (filled, right icon) -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -74,7 +63,6 @@
                     android:inputType="textEmailAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Password (filled, toggle eye on right) -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,19 +95,6 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- (Optional) Forgot password link to match spacing -->
-            <TextView
-                android:id="@+id/tvForgot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Forgot password?"
-                android:textColor="#8FA2B5"
-                android:textSize="12sp"
-                android:layout_marginTop="8dp"
-                android:visibility="gone"/>
-            <!-- set to visible and wire up when you implement -->
-
-            <!-- CTA Button (same as Register) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
@@ -132,24 +107,9 @@
                 android:background="@drawable/bg_btn_primary"
                 app:rippleColor="#33FFFFFF" />
 
-
             <Space
                 android:layout_width="1dp"
                 android:layout_height="12dp" />
-
-            <!-- Footer: operator login link -->
-            <TextView
-                android:id="@+id/tvOperatorLogin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Log in as station operator"
-                android:textColor="#8FA2B5"
-                android:textSize="13sp"
-                android:paddingTop="6dp"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true" />
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -67,6 +67,11 @@ public class ApiClient {
         return doWrite("PUT", path, body, bearer);
     }
 
+    // ✅ Add PATCH (your backend uses PATCH /complete)
+    public JSONObject patch(String path, JSONObject body, String bearer) throws Exception {
+        return doWrite("PATCH", path, body, bearer);
+    }
+
     public JSONObject get(String path, String bearer) throws Exception {
         String full = join(path);
         HttpURLConnection c = (HttpURLConnection) new URL(full).openConnection();

@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -22,6 +23,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.operator.StationOperatorSlotsMockActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.auth.StationOperatorLoginActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <activity android:name=".ui.auth.RegisterActivity" />
         <activity android:name=".ui.dashboard.DashboardActivity" />
         <activity android:name=".ui.dashboard.EditProfileActivity" />
@@ -36,7 +47,25 @@
             android:exported="false"
             android:theme="@style/Theme.EVynk.Dark" />
 
+
         <activity android:name=".ui.reservations.BookSlotActivity" />
+
+        <activity android:name=".ui.operator.StationOperatorHomeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.operator.StationOperatorEnterQrActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.operator.StationOperatorUserFormActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.operator.StationOperatorSlotsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.reservations.EditReservationActivity"
