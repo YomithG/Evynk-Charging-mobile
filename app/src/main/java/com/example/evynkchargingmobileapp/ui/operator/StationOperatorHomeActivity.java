@@ -43,12 +43,12 @@ public class StationOperatorHomeActivity extends AppCompatActivity {
         MaterialButton btnScan = findViewById(R.id.btnScanQr);
         btnScan.setOnClickListener(v -> launchScan());
 
-        // View station slots (mock page for now)
+        // View station slots
         MaterialButton btnSlots = findViewById(R.id.btnViewSlots);
-        btnSlots.setEnabled(true);
-        btnSlots.setAlpha(1f);
         btnSlots.setOnClickListener(v ->
-                startActivity(new Intent(this, StationOperatorSlotsMockActivity.class)));
+                startActivity(new Intent(this, StationOperatorSlotsActivity.class)));
+
+
     }
 
     private void launchScan() {

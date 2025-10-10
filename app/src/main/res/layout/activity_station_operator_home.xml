@@ -29,6 +29,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!--  Card for Scan User QR -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,6 +74,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!--  Card for View Station Slots -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -99,7 +101,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="(Disabled) Backend route not available yet."
+                    android:text="Click to view Station Details"
                     android:textColor="#A5ADBA"
                     android:textSize="13sp"
                     android:layout_marginTop="4dp"/>
@@ -110,6 +112,51 @@
                     android:layout_height="48dp"
                     android:layout_marginTop="12dp"
                     android:text="Open slots"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/bg_btn_primary"
+                    app:rippleColor="#33FFFFFF"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card for View Appointments -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="#151A21"
+            app:cardCornerRadius="16dp"
+            app:strokeColor="#2E3743"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View Appointments"
+                    android:textColor="#E6EAF0"
+                    android:textStyle="bold"
+                    android:textSize="18sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View and manage appointments for this station."
+                    android:textColor="#A5ADBA"
+                    android:textSize="13sp"
+                    android:layout_marginTop="4dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnViewAppointments"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="12dp"
+                    android:text="View Appointments"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
                     android:background="@drawable/bg_btn_primary"

@@ -1,5 +1,6 @@
 package com.example.evynkchargingmobileapp.net;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -67,7 +68,7 @@ public class ApiClient {
         return doWrite("PUT", path, body, bearer);
     }
 
-    // ✅ Add PATCH (your backend uses PATCH /complete)
+    // ✅ Add PATCH method to handle reservations complete action
     public JSONObject patch(String path, JSONObject body, String bearer) throws Exception {
         return doWrite("PATCH", path, body, bearer);
     }
@@ -86,6 +87,25 @@ public class ApiClient {
 
         if (code >= 200 && code < 300) {
             return resp.isEmpty() ? new JSONObject() : new JSONObject(resp);
+        }
+        throw new IOException("HTTP " + code + " @ " + full + ": " + resp);
+    }
+
+    // Helper to retrieve array from API response
+    public JSONArray getArray(String path, String bearer) throws Exception {
+        String full = join(path);
+        HttpURLConnection c = (HttpURLConnection) new URL(full).openConnection();
+        c.setRequestMethod("GET");
+        if (bearer != null) c.setRequestProperty("Authorization", "Bearer " + bearer);
+
+        int code = c.getResponseCode();
+        InputStream is = (code >= 200 && code < 300) ? c.getInputStream() : c.getErrorStream();
+        String resp = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
+                .lines().collect(Collectors.joining("\n"));
+        c.disconnect();
+
+        if (code >= 200 && code < 300) {
+            return resp.isEmpty() ? new JSONArray() : new JSONArray(resp);
         }
         throw new IOException("HTTP " + code + " @ " + full + ": " + resp);
     }

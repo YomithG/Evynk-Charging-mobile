@@ -65,6 +65,7 @@ public class StationOperatorReservationRepository {
     /**
      * PATCH /api/operator/reservations/{id}/complete
      */
+
     public void complete(String bookingId, Result<JSONObject> cb) {
         new Thread(() -> {
             try {
@@ -75,7 +76,7 @@ public class StationOperatorReservationRepository {
                 }
 
                 String path = "api/operator/reservations/" + bookingId + "/complete";
-                JSONObject resp = api.patch(path, new JSONObject(), token);
+                JSONObject resp = api.patch(path, new JSONObject(), token); // This should now work
                 Log.d(TAG, "Complete response: " + resp);
                 cb.onSuccess(resp);
 
@@ -85,4 +86,5 @@ public class StationOperatorReservationRepository {
             }
         }).start();
     }
+
 }
